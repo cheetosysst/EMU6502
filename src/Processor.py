@@ -47,14 +47,42 @@ class Processor:
 			if (Instruction == 0xA5):
 				# LDA Zero Page
 				self._PC += 1
-				ZeroPageAddress = self._memory.Data[self._PC]
-				self._Acc = self._memory.Data[ZeroPageAddress]
+				ZeroPageAddress = self.readByte(self._PC)
+				self._Acc = self.readByte(ZeroPageAddress)
 				self._PS_z = int(self._Acc == 0)
 				self._PS_n = int((self._Acc == 0b10000000)>0)
 			elif (Instruction == 0xA9): 
 				# LDA Immediate
 				self._PC += 1
-				self._Acc = self._memory.Data[self._PC]
+				self._Acc = self.readByte(self._PC)
+				self._PS_z = int(self._Acc == 0)
+				self._PS_n = int((self._Acc == 0b10000000)>0)
+			elif (Instruction == 0xAD): 
+				# LDA Absolute
+				self._PC += 1
+				self._Acc = self.readWord(self._PC)
+				self._PC += 1
+				self._PS_z = int(self._Acc == 0)
+				self._PS_n = int((self._Acc == 0b10000000)>0)
+			elif (Instruction == 0xB5): 
+				# LDA Zero Page, X
+				self._PC += 1
+				ZeroPageAddress = self.readByte(self._PC) + self._Reg_X
+				self._Acc = self.readByte(ZeroPageAddress)
+				self._PS_z = int(self._Acc == 0)
+				self._PS_n = int((self._Acc == 0b10000000)>0)
+			elif (Instruction == 0xB9): 
+				# LDA Absolute, Y
+				self._PC += 1
+				self._Acc = self.readWord(self._PC) + self._Reg_Y
+				self._PC += 1
+				self._PS_z = int(self._Acc == 0)
+				self._PS_n = int((self._Acc == 0b10000000)>0)
+			elif (Instruction == 0xBD): 
+				# LDA Absolute, X
+				self._PC += 1
+				self._Acc = self.readWord(self._PC) + self._Reg_X
+				self._PC += 1
 				self._PS_z = int(self._Acc == 0)
 				self._PS_n = int((self._Acc == 0b10000000)>0)
 			else:
@@ -62,3 +90,9 @@ class Processor:
 				return
 			self._PC += 1
 			# print("continue on {}".format(hex(self._PC)))
+
+	def readByte(self, address):
+		return self._memory.Data[address]
+
+	def readWord(self, address):
+		return self.readByte(address) + self.readByte(address+1) * 0x0100
