@@ -19,6 +19,8 @@ class Processor:
 	_PS_v = bool()	# Overflow Flag
 	_PS_n = bool()	# Negative Flag
 
+	debug = False
+
 	def __init__(self):
 		self._PC = 0xFFFC
 		self._SF = 0x0100
@@ -39,10 +41,12 @@ class Processor:
 		"Start Executing code from current program C"
 		while (True):
 			if (self._PC >= self._memory._MEMORY_SIZE_MAX):
-				print("Program counter exceeded max memory address, exiting.")
+				if (self.debug):
+					print("Program counter exceeded max memory address, exiting.")
 				return
 			Instruction = self._memory.Data[self._PC]
-			print("execute", "0x{:04x}".format(self._PC), "0x{:04x}".format(Instruction))
+			if (self.debug):
+				print("execute", "0x{:04x}".format(self._PC), "0x{:04x}".format(Instruction))
 			
 			if (Instruction == 0xA5):
 				# LDA Zero Page
@@ -86,7 +90,8 @@ class Processor:
 				self._PS_z = int(self._Acc == 0)
 				self._PS_n = int((self._Acc == 0b10000000)>0)
 			else:
-				print("Unknown instruction {} on address {}, exiting.".format("0x{:04x}".format(Instruction), "0x{:04x}".format(self._PC)))
+				if (self.debug):
+					print("Unknown instruction {} on address {}, exiting.".format("0x{:04x}".format(Instruction), "0x{:04x}".format(self._PC)))
 				return
 			self._PC += 1
 			# print("continue on {}".format(hex(self._PC)))
@@ -96,3 +101,7 @@ class Processor:
 
 	def readWord(self, address):
 		return self.readByte(address) + self.readByte(address+1) * 0x0100
+
+	def resetInit(self):
+		self._memory.memoryClear()
+		self.__init__()
