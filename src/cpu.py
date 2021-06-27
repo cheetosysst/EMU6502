@@ -2,8 +2,6 @@ from memory import memory
 
 class cpu:
 
-	
-
 	_memory = memory()
 
 	_PC = int()
@@ -42,19 +40,27 @@ class cpu:
 		pass
 
 	def readByte(self, address):
+		"Read 1 byte from memory"
 		return self._memory.Data[address]
 
 	def readWord(self, address):
+		"Read 2 Bytes from memory"
 		return self.readByte(address) + self.readByte(address+1) * 0x0100
 
 	def _pcIncrement(self, clock=1):
+		"Increment program clock"
 		self._PC += clock
 		pass
 
 	def execute(self):
+		"Executes code"
 		while True:
-			self._instructions[self._memory.Data[self._PC]/0x10][self._memory.Data[self._PC]%0x10]()
-			print()
+			instruction = self._instructions[int(self._memory.Data[self._PC]/0x10)][self._memory.Data[self._PC]%0x10]
+			if instruction is not None:
+				# instruction()
+				self._LdaJ()
+			else:
+				break
 
 	def _LdaJ(self):
 		"MOS6502 instruction, LDA Immediate."
@@ -113,6 +119,8 @@ class cpu:
 		_readAbsoluteX
 	]
 
+	# Instruction table
+	# Reference: http://www.obelisk.me.uk/6502/reference.html
 	_instructions = [
 		#0,    1,    2,    3,    4,    5,    6,    7,    8,    9,    A,    B,    C,    D,    E,    F
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #0
