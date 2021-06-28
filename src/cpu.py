@@ -55,36 +55,42 @@ class cpu:
 	def execute(self):
 		"Executes code"
 		while True:
-			instruction = self._instructions[int(self._memory.Data[self._PC]/0x10)][self._memory.Data[self._PC]%0x10]
+			opCode = self.readByte(self._PC)
+			instruction = self._instructions[int(opCode/0x10)][opCode%0x10]
+			print(opCode, instruction)
 			if instruction is not None:
-				# instruction()
-				self._LdaJ()
+				instruction(self, opCode)
 			else:
 				break
+			print("acc = ", self._Acc)
 
-	def _LdaJ(self):
+	def _LdaJ(self, opCode):
 		"MOS6502 instruction, LDA Immediate."
-		opIndex = self.readByte(self._PC)
 		self._pcIncrement()
-		self._Acc = self.ldaFunction[(opIndex&0x00011100)>>2]()
+		print(self.ldaFunction[(opCode&0b11100)>>2])
+		self._Acc = self.ldaFunction[(opCode&0b11100)>>2](self)
 		self._PS_z = bool(self._Acc == 0)
 		self._PS_n = bool((self._Acc == 0b10000000)>0)
+		self._pcIncrement()
 		pass
 
 	def _readIndirectX(self):
 		return self.readWord(self.readByte(self._PC) + self._Reg_X)
 
 	def _readZeroPage(self):
-		return self.readByte(self._PC)
+		data = self.readByte(self.readByte(self._PC))
+		return data
 
 	def _readImmediate(self):
-		return self.readByte(self.readByte(self._PC))
-
+		return self.readByte(self._PC)
+	
 	def _readAbsolute(self):
-		return self.readWord(self._PC)
+		data = self.readWord(self._PC)
+		self._pcIncrement()
+		return data
 
 	def _readIndirectY(self):
-		address        = self.readByte(self._PC)
+		address      = self.readByte(self._PC)
 		dataAddress  = self.readWord(address)
 		dataAddressY = dataAddress + self._Reg_Y
 		if dataAddress ^ dataAddressY >> 8:
@@ -94,7 +100,7 @@ class cpu:
 		return dataAddressY
 
 	def _readZeroPageX(self):
-		return self.readByte(self.readByte(self._PC) + self._Reg_X)
+		return self.readByte((self.readByte(self._PC)+ self._Reg_X)&0b11111111)
 
 	def _readAbsoluteY(self):
 		address  = self.readWord(self._PC)
