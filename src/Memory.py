@@ -14,7 +14,7 @@ class memory:
 		pass
 
 	def loadBinary(self, path):
-		"Load Binary File (not implemented yet)"
+		"Load Binary File"
 		with open("src/65C02_extended_opcodes_test.bin", "rb") as f, mmap(f.fileno(), 0, access=ACCESS_READ) as s:
 			for i in range(0xffff):
 				self.Data[i] = s[i]
