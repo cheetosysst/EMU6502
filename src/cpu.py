@@ -62,7 +62,7 @@ class cpu:
 			else:
 				break
 
-	def _LdaJ(self, opCode):
+	def _Lda(self, opCode):
 		"MOS6502 instruction, LDA Immediate."
 		self._pcIncrement()
 		if (opCode&0b11100)>>2 == 2:
@@ -76,36 +76,44 @@ class cpu:
 		pass
 
 	def _readIndirectX(self):
+		"Indexed indirect addressing mode. It adds the X registor with the second byte of the instruction, returns it as an address."
 		address = self.readWord((self.readByte(self._PC) + self._Reg_X) & 0b11111111)
 		dataAddress = self.readWord(address)
 		return dataAddress
 
 	def _readZeroPage(self):
+		"Zero page addressing mode. Returns the second byte in the instruction as an address in zero page."
 		return self.readByte(self._PC)
 
 	def _readImmediate(self):
+		"Returns a two byte data."
 		return self.readByte(self._PC) & 0b11111111
 	
 	def _readAbsolute(self):
+		"Absolute addrssing mode. Returns the next two byte as an address"
 		address = self.readWord(self._PC)
 		self._pcIncrement()
 		return address
 
 	def _readIndirectY(self):
+		"Indirect indexed addressing mode. It read the second byte as an address to a word in zero page. Returns the word+Y registor as an address"
 		address      = self.readByte(self._PC)
 		dataAddress  = self.readWord(address)
-		dataAddressY = (dataAddress + self._Reg_Y) & 0b11111111
+		dataAddressY = (dataAddress + self._Reg_Y)
 		return dataAddressY
 
 	def _readZeroPageX(self):
+		"Zero Page,X addressing mode. Read the second byte of the instruction, add to the X registor. Return the result as an address in zero pag.e"
 		return (self.readByte(self._PC)+ self._Reg_X)&0b11111111
 
 	def _readAbsoluteY(self):
+		"Absolute,y addressing mode. Reads the next two bytes in the instruction as an address. Returns the address+Y registor as an address."
 		address = self.readWord(self._PC) + self._Reg_Y
 		self._pcIncrement()
 		return address
 
 	def _readAbsoluteX(self):
+		"Absolute,x addressing mode. Reads the next two bytes in the instruction as an address. Returns the address+X registor as an address."
 		address = self.readWord(self._PC) + self._Reg_X
 		self._pcIncrement()
 		return address
@@ -135,8 +143,8 @@ class cpu:
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #7
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #8
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #9
-		[None, _LdaJ, None, None, None, _LdaJ, None, None, None, _LdaJ, None, None, None, _LdaJ, None, None], #A
-		[None, _LdaJ, None, None, None, _LdaJ, None, None, None, _LdaJ, None, None, None, _LdaJ, None, None], #B
+		[None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None], #A
+		[None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None], #B
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #C
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #D
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #E
