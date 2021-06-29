@@ -45,7 +45,7 @@ class cpu:
 
 	def readWord(self, address):
 		"Read 2 Bytes from memory"
-		return self.readByte(address) + self.readByte(address+1) * 0x0100
+		return  self._memory.Data[address] + self._memory.Data[address+1]*0x0100
 
 	def _pcIncrement(self, clock=1):
 		"Increment program clock"
@@ -57,17 +57,14 @@ class cpu:
 		while True:
 			opCode = self.readByte(self._PC)
 			instruction = self._instructions[int(opCode/0x10)][opCode%0x10]
-			print(opCode, instruction)
 			if instruction is not None:
 				instruction(self, opCode)
 			else:
 				break
-			print("acc = ", self._Acc)
 
 	def _LdaJ(self, opCode):
 		"MOS6502 instruction, LDA Immediate."
 		self._pcIncrement()
-		print(self.ldaFunction[(opCode&0b11100)>>2])
 		self._Acc = self.ldaFunction[(opCode&0b11100)>>2](self)
 		self._PS_z = bool(self._Acc == 0)
 		self._PS_n = bool((self._Acc == 0b10000000)>0)
@@ -75,44 +72,44 @@ class cpu:
 		pass
 
 	def _readIndirectX(self):
-		return self.readWord(self.readByte(self._PC) + self._Reg_X)
+		address = self.readWord((self.readByte(self._PC) + self._Reg_X) & 0b11111111)
+		dataAddress = self.readWord(address)
+		return self.readByte(dataAddress) & 0b11111111
 
 	def _readZeroPage(self):
 		data = self.readByte(self.readByte(self._PC))
-		return data
+		return data & 0b11111111
 
 	def _readImmediate(self):
-		return self.readByte(self._PC)
+		return self.readByte(self._PC) & 0b11111111
 	
 	def _readAbsolute(self):
-		data = self.readWord(self._PC)
+		address = self.readWord(self._PC)
+		data    = self.readByte(address)
 		self._pcIncrement()
-		return data
+		return data & 0b11111111
 
 	def _readIndirectY(self):
 		address      = self.readByte(self._PC)
 		dataAddress  = self.readWord(address)
-		dataAddressY = dataAddress + self._Reg_Y
-		if dataAddress ^ dataAddressY >> 8:
-			self._pcIncrement(5)
-		else:
-			self._pcIncrement(4)
-		return dataAddressY
+		dataAddressY = (dataAddress + self._Reg_Y) & 0b11111111
+		data         = self.readByte(dataAddressY)
+		return data
 
 	def _readZeroPageX(self):
 		return self.readByte((self.readByte(self._PC)+ self._Reg_X)&0b11111111)
 
 	def _readAbsoluteY(self):
-		address  = self.readWord(self._PC)
-		addressY = address + self._Reg_Y
-		if address ^ addressY >> 8:
-			self._pcIncrement(4)
-		else:
-			self._pcIncrement(3)
-		return addressY
+		address = self.readWord(self._PC) + self._Reg_Y
+		data = self.readByte(address)
+		self._pcIncrement()
+		return data & 0b11111111
 
 	def _readAbsoluteX(self):
-		return self.readWord(self._PC) + self._Reg_X
+		address = self.readWord(self._PC) + self._Reg_X
+		data = self.readByte(address)
+		self._pcIncrement()
+		return data & 0b11111111
 
 	ldaFunction = [
 		_readIndirectX,
