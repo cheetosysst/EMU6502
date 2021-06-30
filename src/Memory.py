@@ -1,9 +1,10 @@
+from mmap import ACCESS_READ, mmap
 class memory:
 	
 	_MEMORY_SIZE_MAX = int()
 	Data = list()
 
-	def __init__(self, size=0xFFFF):
+	def __init__(self, size=0x10000):
 		self._MEMORY_SIZE_MAX = size
 		self.memoryClear()
 		pass
@@ -23,6 +24,6 @@ class memory:
 	def memoryDump(self, path):
 		"Dump memory to a file"
 		file = open(path, "wb")
-		for i in range(0xffff):
-			file.write(self.Data[i])
+		for i in self.Data:
+			file.write(bytes([i]))
 		file.close()
