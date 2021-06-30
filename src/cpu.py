@@ -1,3 +1,4 @@
+from os import write
 from memory import memory
 
 class cpu:
@@ -47,6 +48,17 @@ class cpu:
 		"Read 2 Bytes from memory"
 		return  self._memory.Data[address] + self._memory.Data[address+1]*0x0100
 
+	def writeByte(self, address, value):
+		"Write 1 byte to memory. Only accept 8 bit value, higher bits will be ignored."
+		self._memory.Data[address] = value & 0b11111111
+		pass
+
+	def writeWord(self, address, value):
+		"Write 2 bytes to memory. Only accept 16 bit value, higher bits will be ignored."
+		self._memory.Data[address] = value & 0b11111111
+		self._memory.Data[address+1] = (value >> 8) & 0b11111111
+		pass
+
 	def _pcIncrement(self, clock=1):
 		"Increment program clock"
 		self._PC += clock
@@ -86,6 +98,21 @@ class cpu:
 		else:
 			dataAddress = self.adcFunction[(opCode&0b11100)>>2](self)
 			self._Acc &= self.readByte(dataAddress)
+		self._PS_z = bool(self._Acc == 0)
+		self._PS_n = bool((self._Acc == 0b10000000)>0)
+		self._pcIncrement()
+		pass
+
+	def _Asl(self, opCode):
+		"MOS6502 instruction ASL"
+		self._pcIncrement()
+		if (opCode&0b11100)>>2 == 2:
+			self._PS_c = self._Acc >> 7
+			self._Acc = (self._Acc & 0b01111111) << 1
+		else:
+			dataAddress = self.adcFunction[(opCode&0b11100)>>2](self)
+			data = (self.readByte(dataAddress)&0b01111111) << 1
+			self.writeByte(dataAddress, data)
 		self._PS_z = bool(self._Acc == 0)
 		self._PS_n = bool((self._Acc == 0b10000000)>0)
 		self._pcIncrement()
@@ -169,6 +196,17 @@ class cpu:
 		_readAbsoluteX
 	]
 
+	aslFunction = [
+		None,
+		_readZeroPage,
+		None, # Acc
+		_readAbsolute,
+		None,
+		_readZeroPageX,
+		None,
+		_readAbsoluteX
+	]
+
 	ldaFunction = [
 		_readIndirectX,
 		_readZeroPage,
@@ -184,8 +222,8 @@ class cpu:
 	# Reference: http://www.obelisk.me.uk/6502/reference.html
 	_instructions = [
 		#0,    1,    2,    3,    4,    5,    6,    7,    8,    9,    A,    B,    C,    D,    E,    F
-		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #0
-		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #1
+		[None, None, None, None, None, None, _Asl, None, None, None, _Asl, None, None, None, _Asl, None], #0
+		[None, None, None, None, None, None, _Asl, None, None, None, None, None, None, None, _Asl, None], #1
 		[None, _And, None, None, None, _And, None, None, None, _And, None, None, None, _And, None, None], #2
 		[None, _And, None, None, None, _And, None, None, None, _And, None, None, None, _And, None, None], #3
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #4
