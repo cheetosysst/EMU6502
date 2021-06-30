@@ -62,8 +62,37 @@ class cpu:
 			else:
 				break
 
+	def _Adc(self, opCode):
+		"MOS6502 instruction ADC"
+		self._pcIncrement()
+		if (opCode&0b11100)>>2 == 2:
+			self._Acc += self.adcFunction[2](self)
+		else:
+			dataAddress = self.adcFunction[(opCode&0b11100)>>2](self)
+			self._Acc += self.readByte(dataAddress)
+		if self._Acc > 0xFF:
+			self._PS_c = True
+			self._Acc = self._Acc & 0xFF
+		self._PS_z = bool(self._Acc == 0)
+		self._PS_n = bool((self._Acc == 0b10000000)>0)
+		self._pcIncrement()
+		pass
+
+	def _And(self, opCode):
+		"MOS6502 instruction AND"
+		self._pcIncrement()
+		if (opCode&0b11100)>>2 == 2:
+			self._Acc &= self.adcFunction[2](self)
+		else:
+			dataAddress = self.adcFunction[(opCode&0b11100)>>2](self)
+			self._Acc &= self.readByte(dataAddress)
+		self._PS_z = bool(self._Acc == 0)
+		self._PS_n = bool((self._Acc == 0b10000000)>0)
+		self._pcIncrement()
+		pass
+
 	def _Lda(self, opCode):
-		"MOS6502 instruction, LDA Immediate."
+		"MOS6502 instruction LDA"
 		self._pcIncrement()
 		if (opCode&0b11100)>>2 == 2:
 			self._Acc = self.ldaFunction[2](self)
@@ -118,6 +147,28 @@ class cpu:
 		self._pcIncrement()
 		return address
 
+	adcFunction = [
+		_readIndirectX,
+		_readZeroPage,
+		_readImmediate,
+		_readAbsolute,
+		_readIndirectY,
+		_readZeroPageX,
+		_readAbsoluteY,
+		_readAbsoluteX
+	]
+
+	andFunction = [
+		_readIndirectX,
+		_readZeroPage,
+		_readImmediate,
+		_readAbsolute,
+		_readIndirectY,
+		_readZeroPageX,
+		_readAbsoluteY,
+		_readAbsoluteX
+	]
+
 	ldaFunction = [
 		_readIndirectX,
 		_readZeroPage,
@@ -139,8 +190,8 @@ class cpu:
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #3
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #4
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #5
-		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #6
-		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #7
+		[None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None], #6
+		[None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None], #7
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #8
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #9
 		[None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None], #A
