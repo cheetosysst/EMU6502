@@ -186,8 +186,8 @@ class cpu:
 		#0,    1,    2,    3,    4,    5,    6,    7,    8,    9,    A,    B,    C,    D,    E,    F
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #0
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #1
-		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #2
-		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #3
+		[None, _And, None, None, None, _And, None, None, None, _And, None, None, None, _And, None, None], #2
+		[None, _And, None, None, None, _And, None, None, None, _And, None, None, None, _And, None, None], #3
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #4
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #5
 		[None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None], #6
