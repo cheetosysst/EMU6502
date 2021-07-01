@@ -184,6 +184,20 @@ class cpu:
 		self._pcIncrement()
 		pass
 
+	def _Cpy(self, opCode):
+		"MOS6502 instruction CPY"
+		self._pcIncrement()
+		if (opCode&0b11100)>>2 == 1:
+			data = self.ldaFunction[2](self)
+		else:
+			dataAddress = self.ldaFunction[(opCode&0b11100)>>2](self)
+			data = self.readByte(dataAddress)
+		self._PS_c = bool(self._Reg_Y >= data)
+		self._PS_z = bool(self._Reg_Y == data)
+		self._PS_n = bool((self._Acc == 0b10000000)>0)
+		self._pcIncrement()
+		pass
+
 	def _Lda(self, opCode):
 		"MOS6502 instruction LDA"
 		self._pcIncrement()
@@ -306,6 +320,17 @@ class cpu:
 		None
 	]
 
+	cpyFunction = [
+		_readImmediate,
+		_readZeroPage,
+		None,
+		_readAbsolute,
+		None,
+		None,
+		None,
+		None
+	]
+
 	ldaFunction = [
 		_readIndirectX,
 		_readZeroPage,
@@ -333,7 +358,7 @@ class cpu:
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #9
 		[None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None], #A
 		[None, _Lda, None, None, None, _Lda, None, None, _Clv, _Lda, None, None, None, _Lda, None, None], #B
-		[None, _Cmp, None, None, None, _Cmp, None, None, None, _Cmp, None, None, None, _Cmp, None, None], #C
+		[_Cpy, _Cmp, None, None, _Cpy, _Cmp, None, None, None, _Cmp, None, None, _Cpy, _Cmp, None, None], #C
 		[None, _Cmp, None, None, None, _Cmp, None, None, _Cld, _Cmp, None, None, None, _Cmp, None, None], #D
 		[_Cpx, None, None, None, _Cpx, None, None, None, None, None, None, None, _Cpx, None, None, None], #E
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]  #F
