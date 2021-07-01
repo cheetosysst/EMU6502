@@ -151,7 +151,7 @@ class cpu:
 		pass
 
 	def _Clv(self, opCode=None):
-		"MOS6502 instruction CLI"
+		"MOS6502 instruction CLV"
 		self._PS_v = False
 		self._pcIncrement()
 		pass
@@ -166,6 +166,20 @@ class cpu:
 			data = self.readByte(dataAddress)
 		self._PS_c = bool(self._Acc >= data)
 		self._PS_z = bool(self._Acc == data)
+		self._PS_n = bool((self._Acc == 0b10000000)>0)
+		self._pcIncrement()
+		pass
+
+	def _Cpx(self, opCode):
+		"MOS6502 instruction CPX"
+		self._pcIncrement()
+		if (opCode&0b11100)>>2 == 1:
+			data = self.ldaFunction[2](self)
+		else:
+			dataAddress = self.ldaFunction[(opCode&0b11100)>>2](self)
+			data = self.readByte(dataAddress)
+		self._PS_c = bool(self._Reg_X >= data)
+		self._PS_z = bool(self._Reg_X == data)
 		self._PS_n = bool((self._Acc == 0b10000000)>0)
 		self._pcIncrement()
 		pass
@@ -281,6 +295,17 @@ class cpu:
 		_readAbsoluteX
 	]
 
+	cpxFunction = [
+		_readImmediate,
+		_readZeroPage,
+		None,
+		_readAbsolute,
+		None,
+		None,
+		None,
+		None
+	]
+
 	ldaFunction = [
 		_readIndirectX,
 		_readZeroPage,
@@ -310,6 +335,6 @@ class cpu:
 		[None, _Lda, None, None, None, _Lda, None, None, _Clv, _Lda, None, None, None, _Lda, None, None], #B
 		[None, _Cmp, None, None, None, _Cmp, None, None, None, _Cmp, None, None, None, _Cmp, None, None], #C
 		[None, _Cmp, None, None, None, _Cmp, None, None, _Cld, _Cmp, None, None, None, _Cmp, None, None], #D
-		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #E
+		[_Cpx, None, None, None, _Cpx, None, None, None, None, None, None, None, _Cpx, None, None, None], #E
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]  #F
 	]
