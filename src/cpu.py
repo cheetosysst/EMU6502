@@ -150,6 +150,12 @@ class cpu:
 		self._pcIncrement()
 		pass
 
+	def _Clv(self, opCode=None):
+		"MOS6502 instruction CLI"
+		self._PS_v = False
+		self._pcIncrement()
+		pass
+
 	def _Lda(self, opCode):
 		"MOS6502 instruction LDA"
 		self._pcIncrement()
@@ -276,7 +282,7 @@ class cpu:
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #8
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #9
 		[None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None], #A
-		[None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None], #B
+		[None, _Lda, None, None, None, _Lda, None, None, _Clv, _Lda, None, None, None, _Lda, None, None], #B
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #C
 		[None, None, None, None, None, None, None, None, _Cld, None, None, None, None, None, None, None], #D
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #E
