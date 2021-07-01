@@ -118,6 +118,18 @@ class cpu:
 		self._pcIncrement()
 		pass
 
+	def _Bit(self, opCode):
+		"MOS6502 instruction BIT"
+		self._pcIncrement()
+		dataAddress = self.bitFunction[(opCode&0b11100)>>2](self)
+		data = self.readByte(dataAddress)
+		self._Acc &= data
+		self._PS_z = bool(self._Acc == 0)
+		self._PS_v = bool((self._Acc == 0b01000000)>0)
+		self._PS_n = bool((self._Acc == 0b10000000)>0)
+		self._pcIncrement()
+		pass
+
 	def _Lda(self, opCode):
 		"MOS6502 instruction LDA"
 		self._pcIncrement()
@@ -207,6 +219,17 @@ class cpu:
 		_readAbsoluteX
 	]
 
+	bitFunction = [
+		None,
+		_readZeroPage,
+		None,
+		_readAbsolute,
+		None,
+		None,
+		None,
+		None,
+	]
+
 	ldaFunction = [
 		_readIndirectX,
 		_readZeroPage,
@@ -224,7 +247,7 @@ class cpu:
 		#0,    1,    2,    3,    4,    5,    6,    7,    8,    9,    A,    B,    C,    D,    E,    F
 		[None, None, None, None, None, None, _Asl, None, None, None, _Asl, None, None, None, _Asl, None], #0
 		[None, None, None, None, None, None, _Asl, None, None, None, None, None, None, None, _Asl, None], #1
-		[None, _And, None, None, None, _And, None, None, None, _And, None, None, None, _And, None, None], #2
+		[None, _And, None, None, _Bit, _And, None, None, None, _And, None, None, _Bit, _And, None, None], #2
 		[None, _And, None, None, None, _And, None, None, None, _And, None, None, None, _And, None, None], #3
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #4
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #5
