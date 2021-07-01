@@ -132,6 +132,11 @@ class cpu:
 		self._pcIncrement()
 		pass
 
+	def _Clc(self, opCode=None):
+		self._PS_c = False
+		self._pcIncrement()
+		pass
+
 	def _Lda(self, opCode):
 		"MOS6502 instruction LDA"
 		self._pcIncrement()
@@ -248,7 +253,7 @@ class cpu:
 	_instructions = [
 		#0,    1,    2,    3,    4,    5,    6,    7,    8,    9,    A,    B,    C,    D,    E,    F
 		[None, None, None, None, None, None, _Asl, None, None, None, _Asl, None, None, None, _Asl, None], #0
-		[None, None, None, None, None, None, _Asl, None, None, None, None, None, None, None, _Asl, None], #1
+		[None, None, None, None, None, None, _Asl, None, _Clc, None, None, None, None, None, _Asl, None], #1
 		[None, _And, None, None, _Bit, _And, None, None, None, _And, None, None, _Bit, _And, None, None], #2
 		[None, _And, None, None, None, _And, None, None, None, _And, None, None, None, _And, None, None], #3
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #4
