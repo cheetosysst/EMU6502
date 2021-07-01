@@ -133,7 +133,14 @@ class cpu:
 		pass
 
 	def _Clc(self, opCode=None):
+		"MOS6502 instruction CLC"
 		self._PS_c = False
+		self._pcIncrement()
+		pass
+
+	def _Cld(self, opCode=None):
+		"MOS6502 instruction CLD"
+		self._PS_d = False
 		self._pcIncrement()
 		pass
 
@@ -265,7 +272,7 @@ class cpu:
 		[None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None], #A
 		[None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None], #B
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #C
-		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #D
+		[None, None, None, None, None, None, None, None, _Cld, None, None, None, None, None, None, None], #D
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #E
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]  #F
 	]
