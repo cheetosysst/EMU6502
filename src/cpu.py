@@ -111,7 +111,9 @@ class cpu:
 			self._Acc = (self._Acc & 0b01111111) << 1
 		else:
 			dataAddress = self.adcFunction[(opCode&0b11100)>>2](self)
-			data = (self.readByte(dataAddress)&0b01111111) << 1
+			data = self.readByte(dataAddress)
+			self._PS_c = (data & 0b10000000) >> 7
+			data = (data & 0b01111111) << 1
 			self.writeByte(dataAddress, data)
 		self._PS_z = bool(self._Acc == 0)
 		self._PS_n = bool((self._Acc == 0b10000000)>0)
