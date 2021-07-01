@@ -144,6 +144,12 @@ class cpu:
 		self._pcIncrement()
 		pass
 
+	def _Cli(self, opCode=None):
+		"MOS6502 instruction CLI"
+		self._PS_i = False
+		self._pcIncrement()
+		pass
+
 	def _Lda(self, opCode):
 		"MOS6502 instruction LDA"
 		self._pcIncrement()
@@ -264,7 +270,7 @@ class cpu:
 		[None, _And, None, None, _Bit, _And, None, None, None, _And, None, None, _Bit, _And, None, None], #2
 		[None, _And, None, None, None, _And, None, None, None, _And, None, None, None, _And, None, None], #3
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #4
-		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #5
+		[None, None, None, None, None, None, None, None, _Cli, None, None, None, None, None, None, None], #5
 		[None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None], #6
 		[None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None], #7
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #8
