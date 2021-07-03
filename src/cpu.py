@@ -86,7 +86,7 @@ class cpu:
 			self._PS_c = True
 			self._Acc = self._Acc & 0xFF
 		self._PS_z = bool(self._Acc == 0)
-		self._PS_n = bool((self._Acc == 0b10000000)>0)
+		self._PS_n = bool((self._Acc & 0b10000000)>0)
 		self._pcIncrement()
 		pass
 
@@ -99,7 +99,7 @@ class cpu:
 			dataAddress = self.adcFunction[(opCode&0b11100)>>2](self)
 			self._Acc &= self.readByte(dataAddress)
 		self._PS_z = bool(self._Acc == 0)
-		self._PS_n = bool((self._Acc == 0b10000000)>0)
+		self._PS_n = bool((self._Acc & 0b10000000)>0)
 		self._pcIncrement()
 		pass
 
@@ -109,14 +109,15 @@ class cpu:
 		if (opCode&0b11100)>>2 == 2:
 			self._PS_c = self._Acc >> 7
 			self._Acc = (self._Acc & 0b01111111) << 1
+			self._PS_n = bool((self._Acc & 0b10000000)>0)
 		else:
 			dataAddress = self.adcFunction[(opCode&0b11100)>>2](self)
 			data = self.readByte(dataAddress)
 			self._PS_c = (data & 0b10000000) >> 7
 			data = (data & 0b01111111) << 1
 			self.writeByte(dataAddress, data)
+			self._PS_n = bool((data & 0b10000000)>0)
 		self._PS_z = bool(self._Acc == 0)
-		self._PS_n = bool((self._Acc == 0b10000000)>0)
 		self._pcIncrement()
 		pass
 
@@ -127,8 +128,8 @@ class cpu:
 		data = self.readByte(dataAddress)
 		self._Acc &= data
 		self._PS_z = bool(self._Acc == 0)
-		self._PS_v = bool((self._Acc == 0b01000000)>0)
-		self._PS_n = bool((self._Acc == 0b10000000)>0)
+		self._PS_v = bool((self._Acc & 0b01000000)>0)
+		self._PS_n = bool((self._Acc & 0b10000000)>0)
 		self._pcIncrement()
 		pass
 
@@ -166,7 +167,7 @@ class cpu:
 			data = self.readByte(dataAddress)
 		self._PS_c = bool(self._Acc >= data)
 		self._PS_z = bool(self._Acc == data)
-		self._PS_n = bool((self._Acc == 0b10000000)>0)
+		self._PS_n = bool((self._Acc & 0b10000000)>0)
 		self._pcIncrement()
 		pass
 
@@ -180,7 +181,7 @@ class cpu:
 			data = self.readByte(dataAddress)
 		self._PS_c = bool(self._Reg_X >= data)
 		self._PS_z = bool(self._Reg_X == data)
-		self._PS_n = bool((self._Acc == 0b10000000)>0)
+		self._PS_n = bool((self._Acc & 0b10000000)>0)
 		self._pcIncrement()
 		pass
 
@@ -194,7 +195,7 @@ class cpu:
 			data = self.readByte(dataAddress)
 		self._PS_c = bool(self._Reg_Y >= data)
 		self._PS_z = bool(self._Reg_Y == data)
-		self._PS_n = bool((self._Acc == 0b10000000)>0)
+		self._PS_n = bool((self._Acc & 0b10000000)>0)
 		self._pcIncrement()
 		pass
 
@@ -207,7 +208,7 @@ class cpu:
 			dataAddress = self.ldaFunction[(opCode&0b11100)>>2](self)
 			self._Acc = self.readByte(dataAddress)
 		self._PS_z = bool(self._Acc == 0)
-		self._PS_n = bool((self._Acc == 0b10000000)>0)
+		self._PS_n = bool((self._Acc & 0b10000000)>0)
 		self._pcIncrement()
 		pass
 
