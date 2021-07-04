@@ -1,4 +1,4 @@
-from os import write
+from os import read, write
 from memory import memory
 
 class cpu:
@@ -200,15 +200,13 @@ class cpu:
 		pass
 
 	def _Dec(self, opCode):
-		"MOS6502 instruction LDA"
+		"MOS6502 instruction Dec"
 		self._pcIncrement()
-		if (opCode&0b11100)>>2 == 2:
-			self._Acc = self.ldaFunction[2](self)
-		else:
-			dataAddress = self.ldaFunction[(opCode&0b11100)>>2](self)
-			self._Acc = self.readByte(dataAddress)
-		self._PS_z = bool(self._Acc == 0)
-		self._PS_n = bool((self._Acc & 0b10000000)>0)
+		dataAddress = self.decFunction[(opCode&0b11100)>>2](self)
+		data = self.readByte(dataAddress) - 1
+		self.writeByte(data)
+		self._PS_z = bool(data == 0)
+		self._PS_n = bool((data & 0b10000000)>0)
 		self._pcIncrement()
 		pass
 
@@ -346,13 +344,13 @@ class cpu:
 	]
 
 	decFunction = [
-		_readIndirectX,
+		None,
 		_readZeroPage,
-		_readImmediate,
+		None,
 		_readAbsolute,
-		_readIndirectY,
+		None,
 		_readZeroPageX,
-		_readAbsoluteY,
+		None,
 		_readAbsoluteX
 	]
 
@@ -383,8 +381,8 @@ class cpu:
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #9
 		[None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None], #A
 		[None, _Lda, None, None, None, _Lda, None, None, _Clv, _Lda, None, None, None, _Lda, None, None], #B
-		[_Cpy, _Cmp, None, None, _Cpy, _Cmp, None, None, None, _Cmp, None, None, _Cpy, _Cmp, None, None], #C
-		[None, _Cmp, None, None, None, _Cmp, None, None, _Cld, _Cmp, None, None, None, _Cmp, None, None], #D
+		[_Cpy, _Cmp, None, None, _Cpy, _Cmp, _Dec, None, None, _Cmp, None, None, _Cpy, _Cmp, _Dec, None], #C
+		[None, _Cmp, None, None, None, _Cmp, _Dec, None, _Cld, _Cmp, None, None, None, _Cmp, _Dec, None], #D
 		[_Cpx, None, None, None, _Cpx, None, None, None, None, None, None, None, _Cpx, None, None, None], #E
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]  #F
 	]
