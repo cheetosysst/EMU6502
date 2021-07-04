@@ -210,6 +210,15 @@ class cpu:
 		self._pcIncrement()
 		pass
 
+	def _Dex(self, opCode):
+		"MOS6502 instruction DEX"
+		self._pcIncrement()
+		self._Reg_X -= 1
+		self.writeByte(self._Reg_X)
+		self._PS_z = bool(self._Reg_X == 0)
+		self._PS_n = bool((self._Reg_X & 0b10000000)>0)
+		pass
+
 	def _Lda(self, opCode):
 		"MOS6502 instruction LDA"
 		self._pcIncrement()
@@ -381,7 +390,7 @@ class cpu:
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #9
 		[None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None], #A
 		[None, _Lda, None, None, None, _Lda, None, None, _Clv, _Lda, None, None, None, _Lda, None, None], #B
-		[_Cpy, _Cmp, None, None, _Cpy, _Cmp, _Dec, None, None, _Cmp, None, None, _Cpy, _Cmp, _Dec, None], #C
+		[_Cpy, _Cmp, None, None, _Cpy, _Cmp, _Dec, None, None, _Cmp, _Dex, None, _Cpy, _Cmp, _Dec, None], #C
 		[None, _Cmp, None, None, None, _Cmp, _Dec, None, _Cld, _Cmp, None, None, None, _Cmp, _Dec, None], #D
 		[_Cpx, None, None, None, _Cpx, None, None, None, None, None, None, None, _Cpx, None, None, None], #E
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]  #F
