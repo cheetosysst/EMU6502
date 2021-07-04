@@ -199,6 +199,19 @@ class cpu:
 		self._pcIncrement()
 		pass
 
+	def _Dec(self, opCode):
+		"MOS6502 instruction LDA"
+		self._pcIncrement()
+		if (opCode&0b11100)>>2 == 2:
+			self._Acc = self.ldaFunction[2](self)
+		else:
+			dataAddress = self.ldaFunction[(opCode&0b11100)>>2](self)
+			self._Acc = self.readByte(dataAddress)
+		self._PS_z = bool(self._Acc == 0)
+		self._PS_n = bool((self._Acc & 0b10000000)>0)
+		self._pcIncrement()
+		pass
+
 	def _Lda(self, opCode):
 		"MOS6502 instruction LDA"
 		self._pcIncrement()
@@ -240,7 +253,7 @@ class cpu:
 		return dataAddressY
 
 	def _readZeroPageX(self):
-		"Zero Page,X addressing mode. Read the second byte of the instruction, add to the X registor. Return the result as an address in zero pag.e"
+		"Zero Page,X addressing mode. Read the second byte of the instruction, add to the X registor. Return the result as an address in zero page."
 		return (self.readByte(self._PC)+ self._Reg_X)&0b11111111
 
 	def _readAbsoluteY(self):
@@ -330,6 +343,17 @@ class cpu:
 		None,
 		None,
 		None
+	]
+
+	decFunction = [
+		_readIndirectX,
+		_readZeroPage,
+		_readImmediate,
+		_readAbsolute,
+		_readIndirectY,
+		_readZeroPageX,
+		_readAbsoluteY,
+		_readAbsoluteX
 	]
 
 	ldaFunction = [
