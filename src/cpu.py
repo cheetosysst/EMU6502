@@ -228,6 +228,19 @@ class cpu:
 		self._PS_n = bool((self._Reg_X & 0b10000000)>0)
 		pass
 
+	def _Eor(self, opCode):
+		"MOS6502 instruction EOR"
+		self._pcIncrement()
+		if (opCode&0b11100)>>2 == 2:
+			self._Acc ^= self.ldaFunction[2](self)
+		else:
+			dataAddress = self.ldaFunction[(opCode&0b11100)>>2](self)
+			self._Acc ^= self.readByte(dataAddress)
+		self._PS_z = bool(self._Acc == 0)
+		self._PS_n = bool((self._Acc & 0b10000000)>0)
+		self._pcIncrement()
+		pass
+
 	def _Lda(self, opCode):
 		"MOS6502 instruction LDA"
 		self._pcIncrement()
@@ -372,6 +385,17 @@ class cpu:
 		_readAbsoluteX
 	]
 
+	eorFunction = [
+		_readIndirectX,
+		_readZeroPage,
+		_readImmediate,
+		_readAbsolute,
+		_readIndirectY,
+		_readZeroPageX,
+		_readAbsoluteY,
+		_readAbsoluteX
+	]
+
 	ldaFunction = [
 		_readIndirectX,
 		_readZeroPage,
@@ -391,8 +415,8 @@ class cpu:
 		[None, None, None, None, None, None, _Asl, None, _Clc, None, None, None, None, None, _Asl, None], #1
 		[None, _And, None, None, _Bit, _And, None, None, None, _And, None, None, _Bit, _And, None, None], #2
 		[None, _And, None, None, None, _And, None, None, None, _And, None, None, None, _And, None, None], #3
-		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #4
-		[None, None, None, None, None, None, None, None, _Cli, None, None, None, None, None, None, None], #5
+		[None, _Eor, None, None, None, _Eor, None, None, None, _Eor, None, None, None, _Eor, None, None], #4
+		[None, _Eor, None, None, None, _Eor, None, None, _Cli, _Eor, None, None, None, _Eor, None, None], #5
 		[None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None], #6
 		[None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None], #7
 		[None, None, None, None, None, None, None, None, _Dey, None, None, None, None, None, None, None], #8
