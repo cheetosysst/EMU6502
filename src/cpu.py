@@ -334,6 +334,11 @@ class cpu:
 		self._PS_n = bool((data & 0b10000000)>0)
 		pass
 
+	def _Nop(self, opCode):
+		"MOS6502 instruction NOP"
+		self._pcIncrement()
+		pass
+
 	def _readIndirectX(self):
 		"Indexed indirect addressing mode. It adds the X registor with the second byte of the instruction, returns it as an address."
 		address = self.readWord((self.readByte(self._PC) + self._Reg_X) & 0b11111111)
@@ -553,6 +558,6 @@ class cpu:
 		[None, _Lda, None, None, _Ldy, _Lda, _Ldx, None, _Clv, _Lda, None, None, _Ldy, _Lda, _Ldx, None], #B
 		[_Cpy, _Cmp, None, None, _Cpy, _Cmp, _Dec, None, _Iny, _Cmp, _Dex, None, _Cpy, _Cmp, _Dec, None], #C
 		[None, _Cmp, None, None, None, _Cmp, _Dec, None, _Cld, _Cmp, None, None, None, _Cmp, _Dec, None], #D
-		[_Cpx, None, None, None, _Cpx, None, _Inc, None, _Inx, None, None, None, _Cpx, None, _Inc, None], #E
+		[_Cpx, None, None, None, _Cpx, None, _Inc, None, _Inx, None, _Nop, None, _Cpx, None, _Inc, None], #E
 		[None, None, None, None, None, None, _Inc, None, None, None, None, None, None, None, _Inc, None]  #F
 	]
