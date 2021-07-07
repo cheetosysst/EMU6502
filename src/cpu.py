@@ -270,6 +270,18 @@ class cpu:
 		self._pcIncrement()
 		pass
 
+	def _Jmp(self, opCode):
+		"MOS6502 instruction JMP"
+		self._pcIncrement()
+		if opCode == 0x4C:   # Absolute
+			dataAddress = self._readAbsolute()
+			self._PC = dataAddress
+		elif opCode == 0x6C: # Indirect
+			dataAddress = self._readAbsolute()
+			self._PC = self.readWord(dataAddress)
+		self._pcIncrement()
+		pass
+
 	def _Lda(self, opCode):
 		"MOS6502 instruction LDA"
 		self._pcIncrement()
@@ -455,9 +467,9 @@ class cpu:
 		[None, None, None, None, None, None, _Asl, None, _Clc, None, None, None, None, None, _Asl, None], #1
 		[None, _And, None, None, _Bit, _And, None, None, None, _And, None, None, _Bit, _And, None, None], #2
 		[None, _And, None, None, None, _And, None, None, None, _And, None, None, None, _And, None, None], #3
-		[None, _Eor, None, None, None, _Eor, None, None, None, _Eor, None, None, None, _Eor, None, None], #4
+		[None, _Eor, None, None, None, _Eor, None, None, None, _Eor, None, None, _Jmp, _Eor, None, None], #4
 		[None, _Eor, None, None, None, _Eor, None, None, _Cli, _Eor, None, None, None, _Eor, None, None], #5
-		[None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None], #6
+		[None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None, _Jmp, _Adc, None, None], #6
 		[None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None], #7
 		[None, None, None, None, None, None, None, None, _Dey, None, None, None, None, None, None, None], #8
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #9
