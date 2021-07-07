@@ -255,18 +255,18 @@ class cpu:
 	def _Inx(self, opCode):
 		"MOS6502 instruction INX"
 		self._pcIncrement()
-		self._PS_x += 1
-		self._PS_z = bool(self._PS_x == 0)
-		self._PS_n = bool((self._PS_x & 0b10000000)>0)
+		self._Reg_X += 1
+		self._PS_z = bool(self._Reg_X == 0)
+		self._PS_n = bool((self._Reg_X & 0b10000000)>0)
 		self._pcIncrement()
 		pass
 
 	def _Iny(self, opCode):
 		"MOS6502 instruction INY"
 		self._pcIncrement()
-		self._PS_y += 1
-		self._PS_z = bool(self._PS_y == 0)
-		self._PS_n = bool((self._PS_y & 0b10000000)>0)
+		self._Reg_Y += 1
+		self._PS_z = bool(self._Reg_Y == 0)
+		self._PS_n = bool((self._Reg_Y & 0b10000000)>0)
 		self._pcIncrement()
 		pass
 
@@ -292,6 +292,16 @@ class cpu:
 			self._Acc = self.readByte(dataAddress)
 		self._PS_z = bool(self._Acc == 0)
 		self._PS_n = bool((self._Acc & 0b10000000)>0)
+		self._pcIncrement()
+		pass
+
+	def _Ldx(self, opCode):
+		"MOS6502 instruction LDX"
+		self._pcIncrement()
+		dataAddress = self.ldaFunction[(opCode&0b11100)>>2](self)
+		self._Reg_X = self.readByte(dataAddress)
+		self._PS_z = bool(self._Reg_X == 0)
+		self._PS_n = bool((self._Reg_X & 0b10000000)>0)
 		self._pcIncrement()
 		pass
 
@@ -325,6 +335,10 @@ class cpu:
 	def _readZeroPageX(self):
 		"Zero Page,X addressing mode. Read the second byte of the instruction, add to the X registor. Return the result as an address in zero page."
 		return (self.readByte(self._PC)+ self._Reg_X)&0b11111111
+
+	def _readZeroPageY(self):
+		"Zero Page,Y addressing mode. Read the second byte of the instruction, add to the Y registor. Return the result as an address in zero page."
+		return (self.readByte(self._PC)+ self._Reg_Y)&0b11111111
 
 	def _readAbsoluteY(self):
 		"Absolute,y addressing mode. Reads the next two bytes in the instruction as an address. Returns the address+Y registor as an address."
@@ -448,6 +462,17 @@ class cpu:
 		_readAbsoluteX
 	]
 
+	ldxFunction = [
+		_readImmediate,
+		_readZeroPage,
+		None,
+		_readAbsolute,
+		None,
+		_readZeroPageY,
+		None,
+		_readAbsoluteY,
+	]
+
 	incFunction = [
 		None,
 		_readZeroPage,
@@ -473,8 +498,8 @@ class cpu:
 		[None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None], #7
 		[None, None, None, None, None, None, None, None, _Dey, None, None, None, None, None, None, None], #8
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #9
-		[None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None, None, _Lda, None, None], #A
-		[None, _Lda, None, None, None, _Lda, None, None, _Clv, _Lda, None, None, None, _Lda, None, None], #B
+		[None, _Lda, _Ldx, None, None, _Lda, _Ldx, None, None, _Lda, None, None, None, _Lda, _Ldx, None], #A
+		[None, _Lda, None, None, None, _Lda, _Ldx, None, _Clv, _Lda, None, None, None, _Lda, _Ldx, None], #B
 		[_Cpy, _Cmp, None, None, _Cpy, _Cmp, _Dec, None, _Iny, _Cmp, _Dex, None, _Cpy, _Cmp, _Dec, None], #C
 		[None, _Cmp, None, None, None, _Cmp, _Dec, None, _Cld, _Cmp, None, None, None, _Cmp, _Dec, None], #D
 		[_Cpx, None, None, None, _Cpx, None, _Inc, None, _Inx, None, None, None, _Cpx, None, _Inc, None], #E
