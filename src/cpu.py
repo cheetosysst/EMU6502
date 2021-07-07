@@ -161,9 +161,9 @@ class cpu:
 		"MOS6502 instruction CMP"
 		self._pcIncrement()
 		if (opCode&0b11100)>>2 == 2:
-			data = self.ldaFunction[2](self)
+			data = self.cmpFunction[2](self)
 		else:
-			dataAddress = self.ldaFunction[(opCode&0b11100)>>2](self)
+			dataAddress = self.cmpFunction[(opCode&0b11100)>>2](self)
 			data = self.readByte(dataAddress)
 		self._PS_c = bool(self._Acc >= data)
 		self._PS_z = bool(self._Acc == data)
@@ -175,9 +175,9 @@ class cpu:
 		"MOS6502 instruction CPX"
 		self._pcIncrement()
 		if (opCode&0b11100)>>2 == 1:
-			data = self.ldaFunction[2](self)
+			data = self.cpxFunction[2](self)
 		else:
-			dataAddress = self.ldaFunction[(opCode&0b11100)>>2](self)
+			dataAddress = self.cpxFunction[(opCode&0b11100)>>2](self)
 			data = self.readByte(dataAddress)
 		self._PS_c = bool(self._Reg_X >= data)
 		self._PS_z = bool(self._Reg_X == data)
@@ -189,9 +189,9 @@ class cpu:
 		"MOS6502 instruction CPY"
 		self._pcIncrement()
 		if (opCode&0b11100)>>2 == 1:
-			data = self.ldaFunction[2](self)
+			data = self.cpyFunction[2](self)
 		else:
-			dataAddress = self.ldaFunction[(opCode&0b11100)>>2](self)
+			dataAddress = self.cpyFunction[(opCode&0b11100)>>2](self)
 			data = self.readByte(dataAddress)
 		self._PS_c = bool(self._Reg_Y >= data)
 		self._PS_z = bool(self._Reg_Y == data)
@@ -232,9 +232,9 @@ class cpu:
 		"MOS6502 instruction EOR"
 		self._pcIncrement()
 		if (opCode&0b11100)>>2 == 2:
-			self._Acc ^= self.ldaFunction[2](self)
+			self._Acc ^= self.eorFunction[2](self)
 		else:
-			dataAddress = self.ldaFunction[(opCode&0b11100)>>2](self)
+			dataAddress = self.eorFunction[(opCode&0b11100)>>2](self)
 			self._Acc ^= self.readByte(dataAddress)
 		self._PS_z = bool(self._Acc == 0)
 		self._PS_n = bool((self._Acc & 0b10000000)>0)
@@ -244,7 +244,7 @@ class cpu:
 	def _Inc(self, opCode):
 		"MOS6502 instruction INC"
 		self._pcIncrement()
-		dataAddress = self.ldaFunction[(opCode&0b11100)>>2](self)
+		dataAddress = self.incFunction[(opCode&0b11100)>>2](self)
 		data = self.readByte(dataAddress) - 1
 		self.writeByte(dataAddress, data)
 		self._PS_z = bool(data == 0)
