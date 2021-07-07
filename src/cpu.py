@@ -315,6 +315,25 @@ class cpu:
 		self._pcIncrement()
 		pass
 
+	def _Lsr(self, opCode):
+		"MOS6502 instruction LSR"
+		self._pcIncrement()
+		data = 0
+		if (opCode&0b11100)>>2 == 2:
+			self._PS_c = self._Acc & 0b00000001
+			data = self._Acc >> 1
+			self._Acc = data
+		else:
+			dataAddress = self.ldaFunction[(opCode&0b11100)>>2](self)
+			data = self.readByte(dataAddress)
+			self._PS_c = data & 0b00000001
+			data >>= 1
+			self.writeByte(dataAddress, data)
+			self._pcIncrement()
+		self._PS_z = bool(data == 0)
+		self._PS_n = bool((data & 0b10000000)>0)
+		pass
+
 	def _readIndirectX(self):
 		"Indexed indirect addressing mode. It adds the X registor with the second byte of the instruction, returns it as an address."
 		address = self.readWord((self.readByte(self._PC) + self._Reg_X) & 0b11111111)
@@ -505,6 +524,17 @@ class cpu:
 		_readAbsoluteX
 	]
 
+	lsrFunction = [
+		None,
+		_readZeroPage,
+		None,
+		_readAbsolute,
+		None,
+		_readZeroPageX,
+		None,
+		_readAbsoluteX
+	]
+
 	# Instruction table
 	# Reference: http://www.obelisk.me.uk/6502/reference.html
 	_instructions = [
@@ -513,8 +543,8 @@ class cpu:
 		[None, None, None, None, None, None, _Asl, None, _Clc, None, None, None, None, None, _Asl, None], #1
 		[None, _And, None, None, _Bit, _And, None, None, None, _And, None, None, _Bit, _And, None, None], #2
 		[None, _And, None, None, None, _And, None, None, None, _And, None, None, None, _And, None, None], #3
-		[None, _Eor, None, None, None, _Eor, None, None, None, _Eor, None, None, _Jmp, _Eor, None, None], #4
-		[None, _Eor, None, None, None, _Eor, None, None, _Cli, _Eor, None, None, None, _Eor, None, None], #5
+		[None, _Eor, None, None, None, _Eor, _Lsr, None, None, _Eor, _Lsr, None, _Jmp, _Eor, _Lsr, None], #4
+		[None, _Eor, None, None, None, _Eor, _Lsr, None, _Cli, _Eor, None, None, None, _Eor, _Lsr, None], #5
 		[None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None, _Jmp, _Adc, None, None], #6
 		[None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None], #7
 		[None, None, None, None, None, None, None, None, _Dey, None, None, None, None, None, None, None], #8
