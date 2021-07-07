@@ -298,7 +298,17 @@ class cpu:
 	def _Ldx(self, opCode):
 		"MOS6502 instruction LDX"
 		self._pcIncrement()
-		dataAddress = self.ldaFunction[(opCode&0b11100)>>2](self)
+		dataAddress = self.ldxFunction[(opCode&0b11100)>>2](self)
+		self._Reg_X = self.readByte(dataAddress)
+		self._PS_z = bool(self._Reg_X == 0)
+		self._PS_n = bool((self._Reg_X & 0b10000000)>0)
+		self._pcIncrement()
+		pass
+
+	def _Ldy(self, opCode):
+		"MOS6502 instruction LDX"
+		self._pcIncrement()
+		dataAddress = self.ldyFunction[(opCode&0b11100)>>2](self)
 		self._Reg_X = self.readByte(dataAddress)
 		self._PS_z = bool(self._Reg_X == 0)
 		self._PS_n = bool((self._Reg_X & 0b10000000)>0)
@@ -473,6 +483,17 @@ class cpu:
 		_readAbsoluteY,
 	]
 
+	ldyFunction = [
+		_readImmediate,
+		_readZeroPage,
+		None,
+		_readAbsolute,
+		None,
+		_readZeroPageX,
+		None,
+		_readAbsoluteX,
+	]
+
 	incFunction = [
 		None,
 		_readZeroPage,
@@ -498,8 +519,8 @@ class cpu:
 		[None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None], #7
 		[None, None, None, None, None, None, None, None, _Dey, None, None, None, None, None, None, None], #8
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #9
-		[None, _Lda, _Ldx, None, None, _Lda, _Ldx, None, None, _Lda, None, None, None, _Lda, _Ldx, None], #A
-		[None, _Lda, None, None, None, _Lda, _Ldx, None, _Clv, _Lda, None, None, None, _Lda, _Ldx, None], #B
+		[_Ldy, _Lda, _Ldx, None, _Ldy, _Lda, _Ldx, None, None, _Lda, None, None, _Ldy, _Lda, _Ldx, None], #A
+		[None, _Lda, None, None, _Ldy, _Lda, _Ldx, None, _Clv, _Lda, None, None, _Ldy, _Lda, _Ldx, None], #B
 		[_Cpy, _Cmp, None, None, _Cpy, _Cmp, _Dec, None, _Iny, _Cmp, _Dex, None, _Cpy, _Cmp, _Dec, None], #C
 		[None, _Cmp, None, None, None, _Cmp, _Dec, None, _Cld, _Cmp, None, None, None, _Cmp, _Dec, None], #D
 		[_Cpx, None, None, None, _Cpx, None, _Inc, None, _Inx, None, None, None, _Cpx, None, _Inc, None], #E
