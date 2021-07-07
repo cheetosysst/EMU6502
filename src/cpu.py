@@ -324,7 +324,7 @@ class cpu:
 			data = self._Acc >> 1
 			self._Acc = data
 		else:
-			dataAddress = self.ldaFunction[(opCode&0b11100)>>2](self)
+			dataAddress = self.lsrFunction[(opCode&0b11100)>>2](self)
 			data = self.readByte(dataAddress)
 			self._PS_c = data & 0b00000001
 			data >>= 1
@@ -336,6 +336,19 @@ class cpu:
 
 	def _Nop(self, opCode):
 		"MOS6502 instruction NOP"
+		self._pcIncrement()
+		pass
+
+	def _Ora(self, opCode):
+		"MOS6502 instruction ORA"
+		self._pcIncrement()
+		if (opCode&0b11100)>>2 == 2:
+			self._Acc |= self.oraFunction[2](self)
+		else:
+			dataAddress = self.oraFunction[(opCode&0b11100)>>2](self)
+			self._Acc |= self.readByte(dataAddress)
+		self._PS_z = bool(self._Acc == 0)
+		self._PS_n = bool((self._Acc & 0b10000000)>0)
 		self._pcIncrement()
 		pass
 
@@ -540,12 +553,23 @@ class cpu:
 		_readAbsoluteX
 	]
 
+	oraFunction = [
+		_readIndirectX,
+		_readZeroPage,
+		_readImmediate,
+		_readAbsolute,
+		_readIndirectY,
+		_readZeroPageX,
+		_readAbsoluteY,
+		_readAbsoluteX
+	]
+
 	# Instruction table
 	# Reference: http://www.obelisk.me.uk/6502/reference.html
 	_instructions = [
 		#0,    1,    2,    3,    4,    5,    6,    7,    8,    9,    A,    B,    C,    D,    E,    F
-		[None, None, None, None, None, None, _Asl, None, None, None, _Asl, None, None, None, _Asl, None], #0
-		[None, None, None, None, None, None, _Asl, None, _Clc, None, None, None, None, None, _Asl, None], #1
+		[None, _Ora, None, None, None, _Ora, _Asl, None, None, _Ora, _Asl, None, None, _Ora, _Asl, None], #0
+		[None, _Ora, None, None, None, _Ora, _Asl, None, _Clc, _Ora, None, None, None, _Ora, _Asl, None], #1
 		[None, _And, None, None, _Bit, _And, None, None, None, _And, None, None, _Bit, _And, None, None], #2
 		[None, _And, None, None, None, _And, None, None, None, _And, None, None, None, _And, None, None], #3
 		[None, _Eor, None, None, None, _Eor, _Lsr, None, None, _Eor, _Lsr, None, _Jmp, _Eor, _Lsr, None], #4
