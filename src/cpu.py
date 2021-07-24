@@ -352,6 +352,48 @@ class cpu:
 		self._pcIncrement()
 		pass
 
+	def _Rol(self, opCode):
+		"MOS6502 instruction ROL"
+		self._pcIncrement()
+		data = 0
+		if (opCode&0b11100)>>2 == 2:
+			oldFlag = self._PS_c
+			self._PS_c = (self._Acc & 0b10000000) >> 7
+			data = ((self._Acc & 0b01111111) << 1) + oldFlag
+			self._Acc = data
+		else:
+			dataAddress = self.rolFunction[(opCode&0b11100)>>2](self)
+			data = self.readByte(dataAddress)
+			oldFlag = self._PS_c
+			self._PS_c = (data & 0b10000000) >> 7
+			data = ((data & 0b01111111) << 1) + oldFlag
+			self.writeByte(dataAddress, data)
+			self._pcIncrement()
+		self._PS_z = bool(data == 0)
+		self._PS_n = bool((data & 0b10000000)>0)
+		pass
+
+	def _Ror(self, opCode):
+		"MOS6502 instruction ROR"
+		self._pcIncrement()
+		data = 0
+		if (opCode&0b11100)>>2 == 2:
+			oldFlag = self._PS_c
+			self._PS_c = self._Acc & 0b1
+			data = (self._Acc >> 1) + (oldFlag << 7)
+			self._Acc = data
+		else:
+			dataAddress = self.rolFunction[(opCode&0b11100)>>2](self)
+			data = self.readByte(dataAddress)
+			oldFlag = self._PS_c
+			self._PS_c = data & 0b1
+			data = (data >> 1) + (oldFlag << 7)
+			self.writeByte(dataAddress, data)
+			self._pcIncrement()
+		self._PS_z = bool(data == 0)
+		self._PS_n = bool((data & 0b10000000)>0)
+		pass
+
 	def _readIndirectX(self):
 		"Indexed indirect addressing mode. It adds the X registor with the second byte of the instruction, returns it as an address."
 		address = self.readWord((self.readByte(self._PC) + self._Reg_X) & 0b11111111)
@@ -564,18 +606,40 @@ class cpu:
 		_readAbsoluteX
 	]
 
+	rolFunction = [
+		None,
+		_readZeroPage,
+		None,
+		_readAbsolute,
+		None,
+		_readZeroPageX,
+		None,
+		_readAbsoluteX
+	]
+
+	rorFunction = [
+		None,
+		_readZeroPage,
+		None,
+		_readAbsolute,
+		None,
+		_readZeroPageX,
+		None,
+		_readAbsoluteX
+	]
+
 	# Instruction table
 	# Reference: http://www.obelisk.me.uk/6502/reference.html
 	_instructions = [
 		#0,    1,    2,    3,    4,    5,    6,    7,    8,    9,    A,    B,    C,    D,    E,    F
 		[None, _Ora, None, None, None, _Ora, _Asl, None, None, _Ora, _Asl, None, None, _Ora, _Asl, None], #0
 		[None, _Ora, None, None, None, _Ora, _Asl, None, _Clc, _Ora, None, None, None, _Ora, _Asl, None], #1
-		[None, _And, None, None, _Bit, _And, None, None, None, _And, None, None, _Bit, _And, None, None], #2
-		[None, _And, None, None, None, _And, None, None, None, _And, None, None, None, _And, None, None], #3
+		[None, _And, None, None, _Bit, _And, _Rol, None, None, _And, _Rol, None, _Bit, _And, _Rol, None], #2
+		[None, _And, None, None, None, _And, _Rol, None, None, _And, None, None, None, _And, _Rol, None], #3
 		[None, _Eor, None, None, None, _Eor, _Lsr, None, None, _Eor, _Lsr, None, _Jmp, _Eor, _Lsr, None], #4
 		[None, _Eor, None, None, None, _Eor, _Lsr, None, _Cli, _Eor, None, None, None, _Eor, _Lsr, None], #5
-		[None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None, _Jmp, _Adc, None, None], #6
-		[None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None, None, _Adc, None, None], #7
+		[None, _Adc, None, None, None, _Adc, _Ror, None, None, _Adc, _Ror, None, _Jmp, _Adc, _Ror, None], #6
+		[None, _Adc, None, None, None, _Adc, _Ror, None, None, _Adc, None, None, None, _Adc, _Ror, None], #7
 		[None, None, None, None, None, None, None, None, _Dey, None, None, None, None, None, None, None], #8
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #9
 		[_Ldy, _Lda, _Ldx, None, _Ldy, _Lda, _Ldx, None, None, _Lda, None, None, _Ldy, _Lda, _Ldx, None], #A
