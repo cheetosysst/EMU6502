@@ -399,9 +399,9 @@ class cpu:
 		# FIXME: Carry flag & Overflow flag
 		self._pcIncrement()
 		if (opCode&0b11100)>>2 == 2:
-			self._Acc = self._Acc - self.ldaFunction[2](self) - (not self._PS_c)
+			self._Acc = self._Acc - self.sbcFunction[2](self) - (not self._PS_c)
 		else:
-			dataAddress = self.ldaFunction[(opCode&0b11100)>>2](self)
+			dataAddress = self.sbcFunction[(opCode&0b11100)>>2](self)
 			self._Acc = self._Acc - self.readByte(dataAddress) - (not self._PS_c)
 		self._PS_v = bool(self._Acc > 0xFFFF or self._Acc < - 0xFFFF)
 		if self._PS_v:
