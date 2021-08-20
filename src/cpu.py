@@ -423,6 +423,12 @@ class cpu:
 		self._pcIncrement()
 		pass
 
+	def _Sei(self, opCode):
+		"MOS6502 instruction SEI"
+		self._PS_i = True
+		self._pcIncrement()
+		pass
+
 	def _readIndirectX(self):
 		"Indexed indirect addressing mode. It adds the X registor with the second byte of the instruction, returns it as an address."
 		address = self.readWord((self.readByte(self._PC) + self._Reg_X) & 0b11111111)
@@ -679,7 +685,7 @@ class cpu:
 		[None, _Eor, None, None, None, _Eor, _Lsr, None, None, _Eor, _Lsr, None, _Jmp, _Eor, _Lsr, None], #4
 		[None, _Eor, None, None, None, _Eor, _Lsr, None, _Cli, _Eor, None, None, None, _Eor, _Lsr, None], #5
 		[None, _Adc, None, None, None, _Adc, _Ror, None, None, _Adc, _Ror, None, _Jmp, _Adc, _Ror, None], #6
-		[None, _Adc, None, None, None, _Adc, _Ror, None, None, _Adc, None, None, None, _Adc, _Ror, None], #7
+		[None, _Adc, None, None, None, _Adc, _Ror, None, _Sei, _Adc, None, None, None, _Adc, _Ror, None], #7
 		[None, None, None, None, None, None, None, None, _Dey, None, None, None, None, None, None, None], #8
 		[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], #9
 		[_Ldy, _Lda, _Ldx, None, _Ldy, _Lda, _Ldx, None, None, _Lda, None, None, _Ldy, _Lda, _Ldx, None], #A
