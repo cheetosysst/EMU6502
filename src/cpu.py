@@ -453,6 +453,42 @@ class cpu:
 		self._pcIncrement()
 		pass
 
+	def _Tax(self, opCode):
+		"MOS6502 instruction Tax"
+		self._Reg_X = self._Acc
+		self._pcIncrement()
+		pass
+
+	def _Tay(self, opCode):
+		"MOS6502 instruction Tay"
+		self._Reg_Y = self._Acc
+		self._pcIncrement()
+		pass
+
+	def _Tsx(self, opCode):
+		"MOS6502 instruction Tsx"
+		self._Reg_X = self._SP
+		self._pcIncrement()
+		pass
+
+	def _Txa(self, opCode):
+		"MOS6502 instruction Txa"
+		self._Acc = self._Reg_X
+		self._pcIncrement()
+		pass
+
+	def _Txs(self, opCode):
+		"MOS6502 instruction Txs"
+		self._SP = self._Reg_X
+		self._pcIncrement()
+		pass
+
+	def _Tya(self, opCode):
+		"MOS6502 instruction Tya"
+		self._Acc = self._Reg_Y
+		self._pcIncrement()
+		pass
+
 	def _readIndirectX(self):
 		"Indexed indirect addressing mode. It adds the X registor with the second byte of the instruction, returns it as an address."
 		address = self.readWord((self.readByte(self._PC) + self._Reg_X) & 0b11111111)
@@ -743,10 +779,10 @@ class cpu:
 		[None, _Eor, None, None, None, _Eor, _Lsr, None, _Cli, _Eor, None, None, None, _Eor, _Lsr, None], #5
 		[None, _Adc, None, None, None, _Adc, _Ror, None, None, _Adc, _Ror, None, _Jmp, _Adc, _Ror, None], #6
 		[None, _Adc, None, None, None, _Adc, _Ror, None, _Sei, _Adc, None, None, None, _Adc, _Ror, None], #7
-		[None, _Sta, None, None, _Sty, _Sta, _Stx, None, _Dey, None, None, None, _Sty, _Sta, _Stx, None], #8
-		[None, _Sta, None, None, _Sty, _Sta, _Stx, None, None, _Sta, None, None, None, _Sta, None, None], #9
-		[_Ldy, _Lda, _Ldx, None, _Ldy, _Lda, _Ldx, None, None, _Lda, None, None, _Ldy, _Lda, _Ldx, None], #A
-		[None, _Lda, None, None, _Ldy, _Lda, _Ldx, None, _Clv, _Lda, None, None, _Ldy, _Lda, _Ldx, None], #B
+		[None, _Sta, None, None, _Sty, _Sta, _Stx, None, _Dey, None, _Txa, None, _Sty, _Sta, _Stx, None], #8
+		[None, _Sta, None, None, _Sty, _Sta, _Stx, None, _Tya, _Sta, _Txs, None, None, _Sta, None, None], #9
+		[_Ldy, _Lda, _Ldx, None, _Ldy, _Lda, _Ldx, None, _Tay, _Lda, _Tax, None, _Ldy, _Lda, _Ldx, None], #A
+		[None, _Lda, None, None, _Ldy, _Lda, _Ldx, None, _Clv, _Lda, _Tsx, None, _Ldy, _Lda, _Ldx, None], #B
 		[_Cpy, _Cmp, None, None, _Cpy, _Cmp, _Dec, None, _Iny, _Cmp, _Dex, None, _Cpy, _Cmp, _Dec, None], #C
 		[None, _Cmp, None, None, None, _Cmp, _Dec, None, _Cld, _Cmp, None, None, None, _Cmp, _Dec, None], #D
 		[_Cpx, _Sbc, None, None, _Cpx, _Sbc, _Inc, None, _Inx, _Sbc, _Nop, None, _Cpx, _Sbc, _Inc, None], #E
