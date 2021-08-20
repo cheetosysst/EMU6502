@@ -394,6 +394,23 @@ class cpu:
 		self._PS_n = bool((data & 0b10000000)>0)
 		pass
 
+	def _Sbc(self, opCode):
+		"MOS6502 instruction SBC"
+		# FIXME: Carry flag & Overflow flag
+		self._pcIncrement()
+		if (opCode&0b11100)>>2 == 2:
+			self._Acc = self._Acc - self.ldaFunction[2](self) - (not self._PS_c)
+		else:
+			dataAddress = self.ldaFunction[(opCode&0b11100)>>2](self)
+			self._Acc = self._Acc - self.readByte(dataAddress) - (not self._PS_c)
+		self._PS_v = bool(self._Acc > 0xFFFF or self._Acc < - 0xFFFF)
+		if self._PS_v:
+			self._Acc &= 0b11111111
+		self._PS_z = bool(self._Acc == 0)
+		self._PS_n = bool((self._Acc & 0b10000000)>0)
+		self._pcIncrement()
+		pass
+
 	def _readIndirectX(self):
 		"Indexed indirect addressing mode. It adds the X registor with the second byte of the instruction, returns it as an address."
 		address = self.readWord((self.readByte(self._PC) + self._Reg_X) & 0b11111111)
@@ -628,6 +645,17 @@ class cpu:
 		_readAbsoluteX
 	]
 
+	sbcFunction = [
+		_readIndirectX,
+		_readZeroPage,
+		_readImmediate,
+		_readAbsolute,
+		_readIndirectY,
+		_readZeroPageX,
+		_readAbsoluteY,
+		_readAbsoluteX
+	]
+
 	# Instruction table
 	# Reference: http://www.obelisk.me.uk/6502/reference.html
 	_instructions = [
@@ -646,6 +674,6 @@ class cpu:
 		[None, _Lda, None, None, _Ldy, _Lda, _Ldx, None, _Clv, _Lda, None, None, _Ldy, _Lda, _Ldx, None], #B
 		[_Cpy, _Cmp, None, None, _Cpy, _Cmp, _Dec, None, _Iny, _Cmp, _Dex, None, _Cpy, _Cmp, _Dec, None], #C
 		[None, _Cmp, None, None, None, _Cmp, _Dec, None, _Cld, _Cmp, None, None, None, _Cmp, _Dec, None], #D
-		[_Cpx, None, None, None, _Cpx, None, _Inc, None, _Inx, None, _Nop, None, _Cpx, None, _Inc, None], #E
-		[None, None, None, None, None, None, _Inc, None, None, None, None, None, None, None, _Inc, None]  #F
+		[_Cpx, _Sbc, None, None, _Cpx, _Sbc, _Inc, None, _Inx, _Sbc, _Nop, None, _Cpx, _Sbc, _Inc, None], #E
+		[None, _Sbc, None, None, None, _Sbc, _Inc, None, None, _Sbc, None, None, None, _Sbc, _Inc, None]  #F
 	]
