@@ -1,7 +1,96 @@
-from os import read, write
 from memory import memory
 
 class cpu:
+	"""
+	MOS6502 CPU emulator
+	====================
+	Emulates MOS6502 CPU in python
+
+	Attributes
+	----------
+	_memory : memory
+		Object for storing memory in a list and methods to manipulate it.
+
+	_PC : int
+		Program counter, a 2 byte register which points to the next instruction to be executed.
+
+	_SP : int
+		Stack pointer, a 1 byte register points to a 256 byte stack located between $0100 and $01FF.
+
+	_Acc : int
+		Accumulator, a 1 byte register for arithmetic and logical operation.
+
+	_Reg_X : int
+		Index Register X, a 1 byte register commonly used to hold counters or offsets for memory.
+
+	_Reg_Y : int
+		Index Register Y, a 1 byte register commonly used to hold counters or offsets for memory.
+
+	_PS_c : bool
+		Carry Flag, set if the last operation caused an overflow from bit 7 or an uderflow from bit 0.
+
+	_PS_z : bool
+		Zero Flag, set if the result of the last operation is 0.
+
+	_PS_i : bool
+		Interrupt Disable, set with "SEI" instruction to disable cpu interrupt. Clear this flag with "CLI" instruction.
+
+	_PS_d : bool
+		Decimal Flag, set with "SED" instruction to make the processor obey BCD arithmetic. Clear this flag with "CLD" instruction.
+
+	_PS_b : bool
+		Break Command, set when "BRK" instruction has been executed and an interrupt has been generated to process it.
+
+	_PS_v : bool
+		Overflow Flag, set if the result of a arithmetic operation has yielded an invalid 2's complement result.
+
+	_PS_n : bool
+		Negative Flag, set if the result of the last opration had bit 7 set to a one.
+
+	Methods
+	-------
+	readByte(address)
+		Read 1 byte from memory.
+
+	readWord(address)
+		Read 2 bytes from memory
+
+	writeByte(address, value)
+		Write 1 byte to memory. Only accept 8 bit value, higher bits will be ignored.
+
+	writeWord(address, value)
+		Write 2 bytes to memory. Only accept 16 bit value, higher bits will be ignored.
+
+	execute()
+		Start code execution. Execution stops when the current instruction is not implemented.
+
+	_readIndirectX()
+		Indexed indirect addressing mode. It adds the X registor with the second byte of the instruction, returns it as an address.
+
+	_readZeroPage()
+		Zero page addressing mode. Returns the second byte in the instruction as an address in zero page.
+
+	_readImmediate()
+		Returns a two byte data.
+
+	_readAbsolute()
+		Absolute addrssing mode. Returns the next two byte as an address.
+
+	_readIndirectY()
+		Indirect indexed addressing mode. It read the second byte as an address to a word in zero page. Returns the word+Y registor as an address.
+
+	_readZeroPageX()
+		"Zero Page,X" addressing mode. Read the second byte of the instruction, add to the X registor. Return the result as an address in zero page.
+
+	_readZeroPageY()
+		"Zero Page,Y" addressing mode. Read the second byte of the instruction, add to the Y registor. Return the result as an address in zero page.
+
+	_readAbsoluteY()
+		"Absolute,y" addressing mode. Reads the next two bytes in the instruction as an address. Returns the address+Y registor as an address.
+
+	_readAbsoluteX()
+		"Absolute,x" addressing mode. Reads the next two bytes in the instruction as an address. Returns the address+X registor as an address.
+	"""
 
 	_memory = memory()
 
@@ -23,6 +112,12 @@ class cpu:
 	debug = False
 
 	def __init__(self, debug=False):
+		"""
+		Parameters
+		----------
+		debug : bool, optional
+			Debug flag, prints current instruction when set True (default is False).
+		"""
 		self.debug = debug
 		self._PC = self._memory.Data[0xfffc] + self._memory.Data[0xfffd]*0x0100
 		self._SP = 0x0100
@@ -41,31 +136,84 @@ class cpu:
 		pass
 
 	def readByte(self, address):
-		"Read 1 byte from memory"
+		"""
+		Read 1 byte from memory.
+
+		Parameters
+		----------
+		address : int
+			Address in memory.
+
+		Returns
+		-------
+		int
+			1 byte value in the memory on the specified memory address.
+		"""
 		return self._memory.Data[address]
 
 	def readWord(self, address):
-		"Read 2 Bytes from memory"
+		"""
+		Read 2 Bytes from memory.
+
+		Parameters
+		----------
+		address : int
+			Address in memory.
+
+		Returns
+		-------
+		int
+			2 byte value in the memory on the specified memory address.
+		"""
 		return  self._memory.Data[address] + self._memory.Data[address+1]*0x0100
 
 	def writeByte(self, address, value):
-		"Write 1 byte to memory. Only accept 8 bit value, higher bits will be ignored."
+		"""
+		Write 1 byte to memory. Only accept 8 bit value, higher bits will be ignored.
+
+		Parameters
+		----------
+		address : int
+			Address in memory.
+		
+		value : int
+			1 byte value to write to the address.
+		"""
 		self._memory.Data[address] = value & 0b11111111
 		pass
 
 	def writeWord(self, address, value):
-		"Write 2 bytes to memory. Only accept 16 bit value, higher bits will be ignored."
+		"""
+		Write 2 bytes to memory. Only accept 16 bit value, higher bits will be ignored.
+
+		Parameters
+		----------
+		address : int
+			Address in memory.
+		
+		value : int
+			2 byte value to write to the address.
+		"""
 		self._memory.Data[address] = value & 0b11111111
 		self._memory.Data[address+1] = (value >> 8) & 0b11111111
 		pass
 
 	def _pcIncrement(self, clock=1):
-		"Increment program clock"
+		"""
+		Increment program clock.
+
+		Parameters
+		----------
+		clock : int
+			Clock cycles to increment.
+		"""
 		self._PC += clock
 		pass
 
 	def execute(self):
-		"Executes code"
+		"""
+		Start code execution. Execution stops when the current instruction is not implemented.
+		"""
 		while True:
 			opCode = self.readByte(self._PC)
 			instruction = self._instructions[int(opCode/0x10)][opCode%0x10]
