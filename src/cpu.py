@@ -223,7 +223,14 @@ class cpu:
 				break
 
 	def _Adc(self, opCode):
-		"MOS6502 instruction ADC"
+		"""
+		MOS6502 instruction ADC
+
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		if (opCode&0b11100)>>2 == 2:
 			self._Acc += self.adcFunction[2](self)
@@ -239,7 +246,14 @@ class cpu:
 		pass
 
 	def _And(self, opCode):
-		"MOS6502 instruction AND"
+		"""
+		MOS6502 instruction AND
+
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		if (opCode&0b11100)>>2 == 2:
 			self._Acc &= self.adcFunction[2](self)
@@ -252,7 +266,14 @@ class cpu:
 		pass
 
 	def _Asl(self, opCode):
-		"MOS6502 instruction ASL"
+		"""
+		MOS6502 instruction ASL
+
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		if (opCode&0b11100)>>2 == 2:
 			self._PS_c = self._Acc >> 7
@@ -270,7 +291,14 @@ class cpu:
 		pass
 
 	def _Bit(self, opCode):
-		"MOS6502 instruction BIT"
+		"""
+		MOS6502 instruction BIT
+
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		dataAddress = self.bitFunction[(opCode&0b11100)>>2](self)
 		data = self.readByte(dataAddress)
@@ -282,31 +310,66 @@ class cpu:
 		pass
 
 	def _Clc(self, opCode=None):
-		"MOS6502 instruction CLC"
+		"""
+		MOS6502 instruction CLC
+
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._PS_c = False
 		self._pcIncrement()
 		pass
 
 	def _Cld(self, opCode=None):
-		"MOS6502 instruction CLD"
+		"""
+		MOS6502 instruction CLD
+
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._PS_d = False
 		self._pcIncrement()
 		pass
 
 	def _Cli(self, opCode=None):
-		"MOS6502 instruction CLI"
+		"""
+		MOS6502 instruction CLI
+
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._PS_i = False
 		self._pcIncrement()
 		pass
 
 	def _Clv(self, opCode=None):
-		"MOS6502 instruction CLV"
+		"""
+		MOS6502 instruction CLV
+
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._PS_v = False
 		self._pcIncrement()
 		pass
 
 	def _Cmp(self, opCode):
-		"MOS6502 instruction CMP"
+		"""
+		MOS6502 instruction CMP
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		if (opCode&0b11100)>>2 == 2:
 			data = self.cmpFunction[2](self)
@@ -320,7 +383,14 @@ class cpu:
 		pass
 
 	def _Cpx(self, opCode):
-		"MOS6502 instruction CPX"
+		"""
+		MOS6502 instruction CPX
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		if (opCode&0b11100)>>2 == 1:
 			data = self.cpxFunction[2](self)
@@ -334,7 +404,14 @@ class cpu:
 		pass
 
 	def _Cpy(self, opCode):
-		"MOS6502 instruction CPY"
+		"""
+		MOS6502 instruction CPY
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		if (opCode&0b11100)>>2 == 1:
 			data = self.cpyFunction[2](self)
@@ -348,7 +425,14 @@ class cpu:
 		pass
 
 	def _Dec(self, opCode):
-		"MOS6502 instruction Dec"
+		"""
+		MOS6502 instruction Dec
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		dataAddress = self.decFunction[(opCode&0b11100)>>2](self)
 		data = self.readByte(dataAddress) - 1
@@ -359,7 +443,14 @@ class cpu:
 		pass
 
 	def _Dex(self, opCode):
-		"MOS6502 instruction DEX"
+		"""
+		MOS6502 instruction DEX
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		self._Reg_X -= 1
 		self.writeByte(self._Reg_X)
@@ -368,7 +459,14 @@ class cpu:
 		pass
 
 	def _Dey(self, opCode):
-		"MOS6502 instruction DEY"
+		"""
+		MOS6502 instruction DEY
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		self._Reg_X -= 1
 		self.writeByte(self._Reg_X)
@@ -377,7 +475,14 @@ class cpu:
 		pass
 
 	def _Eor(self, opCode):
-		"MOS6502 instruction EOR"
+		"""
+		MOS6502 instruction EOR
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		if (opCode&0b11100)>>2 == 2:
 			self._Acc ^= self.eorFunction[2](self)
@@ -390,7 +495,14 @@ class cpu:
 		pass
 
 	def _Inc(self, opCode):
-		"MOS6502 instruction INC"
+		"""
+		MOS6502 instruction INC
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		dataAddress = self.incFunction[(opCode&0b11100)>>2](self)
 		data = self.readByte(dataAddress) - 1
@@ -401,7 +513,14 @@ class cpu:
 		pass
 
 	def _Inx(self, opCode):
-		"MOS6502 instruction INX"
+		"""
+		MOS6502 instruction INX
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		self._Reg_X += 1
 		self._PS_z = bool(self._Reg_X == 0)
@@ -410,7 +529,14 @@ class cpu:
 		pass
 
 	def _Iny(self, opCode):
-		"MOS6502 instruction INY"
+		"""
+		MOS6502 instruction INY
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		self._Reg_Y += 1
 		self._PS_z = bool(self._Reg_Y == 0)
@@ -419,7 +545,14 @@ class cpu:
 		pass
 
 	def _Jmp(self, opCode):
-		"MOS6502 instruction JMP"
+		"""
+		MOS6502 instruction JMP
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		if opCode == 0x4C:   # Absolute
 			dataAddress = self._readAbsolute()
@@ -431,7 +564,14 @@ class cpu:
 		pass
 
 	def _Lda(self, opCode):
-		"MOS6502 instruction LDA"
+		"""
+		MOS6502 instruction LDA
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		if (opCode&0b11100)>>2 == 2:
 			self._Acc = self.ldaFunction[2](self)
@@ -444,7 +584,14 @@ class cpu:
 		pass
 
 	def _Ldx(self, opCode):
-		"MOS6502 instruction LDX"
+		"""
+		MOS6502 instruction LDX
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		dataAddress = self.ldxFunction[(opCode&0b11100)>>2](self)
 		self._Reg_X = self.readByte(dataAddress)
@@ -454,7 +601,14 @@ class cpu:
 		pass
 
 	def _Ldy(self, opCode):
-		"MOS6502 instruction LDX"
+		"""
+		MOS6502 instruction LDY
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		dataAddress = self.ldyFunction[(opCode&0b11100)>>2](self)
 		self._Reg_X = self.readByte(dataAddress)
@@ -464,7 +618,14 @@ class cpu:
 		pass
 
 	def _Lsr(self, opCode):
-		"MOS6502 instruction LSR"
+		"""
+		MOS6502 instruction LSR
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		data = 0
 		if (opCode&0b11100)>>2 == 2:
@@ -483,12 +644,26 @@ class cpu:
 		pass
 
 	def _Nop(self, opCode):
-		"MOS6502 instruction NOP"
+		"""
+		MOS6502 instruction NOP
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		pass
 
 	def _Ora(self, opCode):
-		"MOS6502 instruction ORA"
+		"""
+		MOS6502 instruction ORA
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		if (opCode&0b11100)>>2 == 2:
 			self._Acc |= self.oraFunction[2](self)
@@ -501,7 +676,14 @@ class cpu:
 		pass
 
 	def _Rol(self, opCode):
-		"MOS6502 instruction ROL"
+		"""
+		MOS6502 instruction ROL
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		data = 0
 		if (opCode&0b11100)>>2 == 2:
@@ -522,7 +704,14 @@ class cpu:
 		pass
 
 	def _Ror(self, opCode):
-		"MOS6502 instruction ROR"
+		"""
+		MOS6502 instruction ROR
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		data = 0
 		if (opCode&0b11100)>>2 == 2:
@@ -543,7 +732,14 @@ class cpu:
 		pass
 
 	def _Sbc(self, opCode):
-		"MOS6502 instruction SBC"
+		"""
+		MOS6502 instruction SBC
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		# FIXME: Carry flag & Overflow flag
 		self._pcIncrement()
 		if (opCode&0b11100)>>2 == 2:
@@ -560,25 +756,53 @@ class cpu:
 		pass
 
 	def _Sec(self, opCode):
-		"MOS6502 instruction SEC"
+		"""
+		MOS6502 instruction SEC
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._PS_c = True
 		self._pcIncrement()
 		pass
 
 	def _Sed(self, opCode):
-		"MOS6502 instruction SED"
+		"""
+		MOS6502 instruction SED
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._PS_d = True
 		self._pcIncrement()
 		pass
 
 	def _Sei(self, opCode):
-		"MOS6502 instruction SEI"
+		"""
+		MOS6502 instruction SEI
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._PS_i = True
 		self._pcIncrement()
 		pass
 
 	def _Sta(self, opCode):
-		"MOS6502 instruction STA"
+		"""
+		MOS6502 instruction STA
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		dataAddress = self.staFunction[(opCode&0b11100)>>2](self)
 		self.writeByte(dataAddress, self._Acc)
@@ -586,7 +810,14 @@ class cpu:
 		pass
 
 	def _Stx(self, opCode):
-		"MOS6502 instruction STX"
+		"""
+		MOS6502 instruction STX
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		dataAddress = self.stxFunction[(opCode&0b11100)>>2](self)
 		self.writeByte(dataAddress, self._Reg_X)
@@ -594,7 +825,14 @@ class cpu:
 		pass
 
 	def _Sty(self, opCode):
-		"MOS6502 instruction STY"
+		"""
+		MOS6502 instruction STY
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._pcIncrement()
 		dataAddress = self.styFunction[(opCode&0b11100)>>2](self)
 		self.writeByte(dataAddress, self._Reg_Y)
@@ -602,88 +840,198 @@ class cpu:
 		pass
 
 	def _Tax(self, opCode):
-		"MOS6502 instruction Tax"
+		"""
+		MOS6502 instruction Tax
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._Reg_X = self._Acc
 		self._pcIncrement()
 		pass
 
 	def _Tay(self, opCode):
-		"MOS6502 instruction Tay"
+		"""
+		MOS6502 instruction Tay
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._Reg_Y = self._Acc
 		self._pcIncrement()
 		pass
 
 	def _Tsx(self, opCode):
-		"MOS6502 instruction Tsx"
+		"""
+		MOS6502 instruction Tsx
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._Reg_X = self._SP
 		self._pcIncrement()
 		pass
 
 	def _Txa(self, opCode):
-		"MOS6502 instruction Txa"
+		"""
+		MOS6502 instruction Txa
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._Acc = self._Reg_X
 		self._pcIncrement()
 		pass
 
 	def _Txs(self, opCode):
-		"MOS6502 instruction Txs"
+		"""
+		MOS6502 instruction Txs
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._SP = self._Reg_X
 		self._pcIncrement()
 		pass
 
 	def _Tya(self, opCode):
-		"MOS6502 instruction Tya"
+		"""
+		MOS6502 instruction Tya
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
 		self._Acc = self._Reg_Y
 		self._pcIncrement()
 		pass
 
 	def _readIndirectX(self):
-		"Indexed indirect addressing mode. It adds the X registor with the second byte of the instruction, returns it as an address."
+		"""
+		Indexed indirect addressing mode. It adds the X registor with the second byte of the instruction, returns it as an address.
+
+		Returns
+		-------
+		int
+			Address in the memory.
+		"""
 		address = self.readWord((self.readByte(self._PC) + self._Reg_X) & 0b11111111)
 		dataAddress = self.readWord(address)
 		return dataAddress
 
 	def _readZeroPage(self):
-		"Zero page addressing mode. Returns the second byte in the instruction as an address in zero page."
+		"""
+		Zero page addressing mode. Returns the second byte in the instruction as an address in zero page.
+		
+		Returns
+		-------
+		int
+			Address in the memory.
+		"""
 		return self.readByte(self._PC)
 
 	def _readImmediate(self):
-		"Returns a two byte data."
+		"""
+		Returns a two byte data.
+		
+		Returns
+		-------
+		int
+			Address in the memory.
+		"""
 		return self.readByte(self._PC) & 0b11111111
 	
 	def _readAbsolute(self):
-		"Absolute addrssing mode. Returns the next two byte as an address"
+		"""
+		Absolute addrssing mode. Returns the next two byte as an address.
+		
+		Returns
+		-------
+		int
+			Address in the memory.
+		"""
 		address = self.readWord(self._PC)
 		self._pcIncrement()
 		return address
 
 	def _readIndirectY(self):
-		"Indirect indexed addressing mode. It read the second byte as an address to a word in zero page. Returns the word+Y registor as an address"
+		"""
+		Indirect indexed addressing mode. It read the second byte as an address to a word in zero page. Returns the word+Y registor as an address.
+		
+		Returns
+		-------
+		int
+			Address in the memory.
+		"""
 		address      = self.readByte(self._PC)
 		dataAddress  = self.readWord(address)
 		dataAddressY = (dataAddress + self._Reg_Y)
 		return dataAddressY
 
 	def _readZeroPageX(self):
-		"Zero Page,X addressing mode. Read the second byte of the instruction, add to the X registor. Return the result as an address in zero page."
+		"""
+		Zero Page,X addressing mode. Read the second byte of the instruction, add to the X registor. Return the result as an address in zero page.
+		
+		Returns
+		-------
+		int
+			Address in the memory.
+		"""
 		return (self.readByte(self._PC)+ self._Reg_X)&0b11111111
 
 	def _readZeroPageY(self):
-		"Zero Page,Y addressing mode. Read the second byte of the instruction, add to the Y registor. Return the result as an address in zero page."
+		"""
+		Zero Page,Y addressing mode. Read the second byte of the instruction, add to the Y registor. Return the result as an address in zero page.
+		
+		Returns
+		-------
+		int
+			Address in the memory.
+		"""
 		return (self.readByte(self._PC)+ self._Reg_Y)&0b11111111
 
 	def _readAbsoluteY(self):
-		"Absolute,y addressing mode. Reads the next two bytes in the instruction as an address. Returns the address+Y registor as an address."
+		"""
+		Absolute,y addressing mode. Reads the next two bytes in the instruction as an address. Returns the address+Y registor as an address.
+		
+		Returns
+		-------
+		int
+			Address in the memory.
+		"""
 		address = self.readWord(self._PC) + self._Reg_Y
 		self._pcIncrement()
 		return address
 
 	def _readAbsoluteX(self):
-		"Absolute,x addressing mode. Reads the next two bytes in the instruction as an address. Returns the address+X registor as an address."
+		"""
+		Absolute,x addressing mode. Reads the next two bytes in the instruction as an address. Returns the address+X registor as an address.
+		
+		Returns
+		-------
+		int
+			Address in the memory.
+		"""
 		address = self.readWord(self._PC) + self._Reg_X
 		self._pcIncrement()
 		return address
 
+	"""
+	Instruction Addressing Mode List
+	================================
+	Lists of addressing mode methods for different instructions to access.
+	"""
 	adcFunction = [
 		_readIndirectX,
 		_readZeroPage,
@@ -915,8 +1263,13 @@ class cpu:
 		None
 	]
 
-	# Instruction table
-	# Reference: http://www.obelisk.me.uk/6502/reference.html
+	"""
+	Instruction table
+	=================
+	Table of instructions for cpu.execute() to access with different opcodes.
+
+	Reference: http://www.obelisk.me.uk/6502/reference.html
+	"""
 	_instructions = [
 		#0,    1,    2,    3,    4,    5,    6,    7,    8,    9,    A,    B,    C,    D,    E,    F
 		[None, _Ora, None, None, None, _Ora, _Asl, None, None, _Ora, _Asl, None, None, _Ora, _Asl, None], #0
