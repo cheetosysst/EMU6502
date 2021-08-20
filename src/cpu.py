@@ -437,6 +437,22 @@ class cpu:
 		self._pcIncrement()
 		pass
 
+	def _Stx(self, opCode):
+		"MOS6502 instruction STX"
+		self._pcIncrement()
+		dataAddress = self.stxFunction[(opCode&0b11100)>>2](self)
+		self.writeByte(dataAddress, self._Reg_X)
+		self._pcIncrement()
+		pass
+
+	def _Sty(self, opCode):
+		"MOS6502 instruction STY"
+		self._pcIncrement()
+		dataAddress = self.styFunction[(opCode&0b11100)>>2](self)
+		self.writeByte(dataAddress, self._Reg_Y)
+		self._pcIncrement()
+		pass
+
 	def _readIndirectX(self):
 		"Indexed indirect addressing mode. It adds the X registor with the second byte of the instruction, returns it as an address."
 		address = self.readWord((self.readByte(self._PC) + self._Reg_X) & 0b11111111)
@@ -693,6 +709,28 @@ class cpu:
 		_readAbsoluteX
 	]
 
+	stxFunction = [
+		None,
+		_readZeroPage,
+		None,
+		_readAbsolute,
+		None,
+		_readZeroPageY,
+		None,
+		None
+	]
+
+	styFunction = [
+		None,
+		_readZeroPage,
+		None,
+		_readAbsolute,
+		None,
+		_readZeroPageY,
+		None,
+		None
+	]
+
 	# Instruction table
 	# Reference: http://www.obelisk.me.uk/6502/reference.html
 	_instructions = [
@@ -705,8 +743,8 @@ class cpu:
 		[None, _Eor, None, None, None, _Eor, _Lsr, None, _Cli, _Eor, None, None, None, _Eor, _Lsr, None], #5
 		[None, _Adc, None, None, None, _Adc, _Ror, None, None, _Adc, _Ror, None, _Jmp, _Adc, _Ror, None], #6
 		[None, _Adc, None, None, None, _Adc, _Ror, None, _Sei, _Adc, None, None, None, _Adc, _Ror, None], #7
-		[None, _Sta, None, None, None, _Sta, None, None, _Dey, None, None, None, None, _Sta, None, None], #8
-		[None, _Sta, None, None, None, _Sta, None, None, None, _Sta, None, None, None, _Sta, None, None], #9
+		[None, _Sta, None, None, _Sty, _Sta, _Stx, None, _Dey, None, None, None, _Sty, _Sta, _Stx, None], #8
+		[None, _Sta, None, None, _Sty, _Sta, _Stx, None, None, _Sta, None, None, None, _Sta, None, None], #9
 		[_Ldy, _Lda, _Ldx, None, _Ldy, _Lda, _Ldx, None, None, _Lda, None, None, _Ldy, _Lda, _Ldx, None], #A
 		[None, _Lda, None, None, _Ldy, _Lda, _Ldx, None, _Clv, _Lda, None, None, _Ldy, _Lda, _Ldx, None], #B
 		[_Cpy, _Cmp, None, None, _Cpy, _Cmp, _Dec, None, _Iny, _Cmp, _Dex, None, _Cpy, _Cmp, _Dec, None], #C
