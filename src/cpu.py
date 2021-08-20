@@ -417,6 +417,12 @@ class cpu:
 		self._pcIncrement()
 		pass
 
+	def _Sed(self, opCode):
+		"MOS6502 instruction SED"
+		self._PS_d = True
+		self._pcIncrement()
+		pass
+
 	def _readIndirectX(self):
 		"Indexed indirect addressing mode. It adds the X registor with the second byte of the instruction, returns it as an address."
 		address = self.readWord((self.readByte(self._PC) + self._Reg_X) & 0b11111111)
@@ -681,5 +687,5 @@ class cpu:
 		[_Cpy, _Cmp, None, None, _Cpy, _Cmp, _Dec, None, _Iny, _Cmp, _Dex, None, _Cpy, _Cmp, _Dec, None], #C
 		[None, _Cmp, None, None, None, _Cmp, _Dec, None, _Cld, _Cmp, None, None, None, _Cmp, _Dec, None], #D
 		[_Cpx, _Sbc, None, None, _Cpx, _Sbc, _Inc, None, _Inx, _Sbc, _Nop, None, _Cpx, _Sbc, _Inc, None], #E
-		[None, _Sbc, None, None, None, _Sbc, _Inc, None, None, _Sbc, None, None, None, _Sbc, _Inc, None]  #F
+		[None, _Sbc, None, None, None, _Sbc, _Inc, None, _Sed, _Sbc, None, None, None, _Sbc, _Inc, None]  #F
 	]
