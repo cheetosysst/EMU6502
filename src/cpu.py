@@ -55,6 +55,9 @@ class cpu:
 	readWord(address)
 		Read 2 bytes from memory
 
+	readStatus(address)
+		Read processor status.
+
 	writeByte(address, value)
 		Write 1 byte to memory. Only accept 8 bit value, higher bits will be ignored.
 
@@ -101,13 +104,13 @@ class cpu:
 	_Reg_X = 1		# Index Register X
 	_Reg_Y = 1		# Index Register Y
 
-	_PS_c = bool()	# Carry Flag
-	_PS_z = bool()	# Zero Flag
-	_PS_i = bool()	# Interrupt Disable
-	_PS_d = bool()	# Deciaml Mode
-	_PS_b = bool()	# Break Command
-	_PS_v = bool()	# Overflow Flag
 	_PS_n = bool()	# Negative Flag
+	_PS_v = bool()	# Overflow Flag
+	_PS_b = bool()	# Break Command
+	_PS_d = bool()	# Deciaml Mode
+	_PS_i = bool()	# Interrupt Disable
+	_PS_z = bool()	# Zero Flag
+	_PS_c = bool()	# Carry Flag
 
 	debug = False
 
@@ -165,7 +168,29 @@ class cpu:
 		int
 			2 byte value in the memory on the specified memory address.
 		"""
-		return  self._memory.Data[address] + self._memory.Data[address+1]*0x0100
+		return self._memory.Data[address] + self._memory.Data[address+1]*0x0100
+
+	def readStatus(self):
+		"""
+		Read processor status.
+		
+		Reference: https://wiki.nesdev.com/w/index.php/Status_flags
+
+		Returns
+		-------
+		int
+			processor status register.
+		"""
+		return (
+			self._PS_n << 7+ # Negative
+			self._PS_v << 6+ # Overflow
+			0          << 5+ # Break (No effect)
+			0          << 4+ # None  (No effect)
+			self._PS_d << 3+ # Decimal
+			self._PS_i << 2+ # Interrupt
+			self._PS_z << 1+ # Zero
+			self._PS_c       # Carry
+		)	
 
 	def writeByte(self, address, value):
 		"""
@@ -725,6 +750,36 @@ class cpu:
 		self._PS_z = bool(self._Acc == 0)
 		self._PS_n = bool((self._Acc & 0b10000000)>0)
 		self._pcIncrement()
+		pass
+
+	def _Pha(self, opCode):
+		"""
+		MOS6502 instruction PHA
+		=======================
+		Pushes the content of the accumulator on to the stack.
+		
+		Parameters
+		----------
+		opCode : int, optional
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
+		self._pcIncrement()
+		self.writeByte(self._SP, self._Acc)
+		pass
+
+	def _Php(self, opCode):
+		"""
+		MOS6502 instruction PHP
+		=======================
+		Pushes status flags on to the stack.
+		
+		Parameters
+		----------
+		opCode : int, optional
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
+		self._pcIncrement()
+		self.writeByte(self._SP, self._Acc)
 		pass
 
 	def _Rol(self, opCode):
@@ -1372,11 +1427,11 @@ class cpu:
 	"""
 	_instructions = [
 		#0,    1,    2,    3,    4,    5,    6,    7,    8,    9,    A,    B,    C,    D,    E,    F
-		[None, _Ora, None, None, None, _Ora, _Asl, None, None, _Ora, _Asl, None, None, _Ora, _Asl, None], #0
+		[None, _Ora, None, None, None, _Ora, _Asl, None, _Php, _Ora, _Asl, None, None, _Ora, _Asl, None], #0
 		[None, _Ora, None, None, None, _Ora, _Asl, None, _Clc, _Ora, None, None, None, _Ora, _Asl, None], #1
 		[None, _And, None, None, _Bit, _And, _Rol, None, None, _And, _Rol, None, _Bit, _And, _Rol, None], #2
 		[None, _And, None, None, None, _And, _Rol, None, _Sec, _And, None, None, None, _And, _Rol, None], #3
-		[None, _Eor, None, None, None, _Eor, _Lsr, None, None, _Eor, _Lsr, None, _Jmp, _Eor, _Lsr, None], #4
+		[None, _Eor, None, None, None, _Eor, _Lsr, None, _Pha, _Eor, _Lsr, None, _Jmp, _Eor, _Lsr, None], #4
 		[None, _Eor, None, None, None, _Eor, _Lsr, None, _Cli, _Eor, None, None, None, _Eor, _Lsr, None], #5
 		[None, _Adc, None, None, None, _Adc, _Ror, None, None, _Adc, _Ror, None, _Jmp, _Adc, _Ror, None], #6
 		[None, _Adc, None, None, None, _Adc, _Ror, None, _Sei, _Adc, None, None, None, _Adc, _Ror, None], #7
