@@ -779,7 +779,7 @@ class cpu:
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._pcIncrement()
-		self.writeByte(self._SP, self._Acc)
+		self.writeByte(self._SP, self.readStatus())
 		pass
 
 	def _Rol(self, opCode):
