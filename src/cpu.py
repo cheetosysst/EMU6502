@@ -765,6 +765,7 @@ class cpu:
 		"""
 		self._pcIncrement()
 		self.writeByte(self._SP, self._Acc)
+		self._SP -= 1
 		pass
 
 	def _Php(self, opCode):
@@ -780,6 +781,23 @@ class cpu:
 		"""
 		self._pcIncrement()
 		self.writeByte(self._SP, self.readStatus())
+		self._SP -= 1
+		pass
+
+	def _Pla(self, opCode):
+		"""
+		MOS6502 instruction PLA
+		=======================
+		Pulls accumulator from the stack.
+		
+		Parameters
+		----------
+		opCode : int, optional
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
+		self._pcIncrement()
+		self._Acc = self.readByte(self._SP)
+		self._SP += 1
 		pass
 
 	def _Rol(self, opCode):
@@ -1433,7 +1451,7 @@ class cpu:
 		[None, _And, None, None, None, _And, _Rol, None, _Sec, _And, None, None, None, _And, _Rol, None], #3
 		[None, _Eor, None, None, None, _Eor, _Lsr, None, _Pha, _Eor, _Lsr, None, _Jmp, _Eor, _Lsr, None], #4
 		[None, _Eor, None, None, None, _Eor, _Lsr, None, _Cli, _Eor, None, None, None, _Eor, _Lsr, None], #5
-		[None, _Adc, None, None, None, _Adc, _Ror, None, None, _Adc, _Ror, None, _Jmp, _Adc, _Ror, None], #6
+		[None, _Adc, None, None, None, _Adc, _Ror, None, _Pla, _Adc, _Ror, None, _Jmp, _Adc, _Ror, None], #6
 		[None, _Adc, None, None, None, _Adc, _Ror, None, _Sei, _Adc, None, None, None, _Adc, _Ror, None], #7
 		[None, _Sta, None, None, _Sty, _Sta, _Stx, None, _Dey, None, _Txa, None, _Sty, _Sta, _Stx, None], #8
 		[None, _Sta, None, None, _Sty, _Sta, _Stx, None, _Tya, _Sta, _Txs, None, None, _Sta, None, None], #9
