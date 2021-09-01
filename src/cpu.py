@@ -225,6 +225,10 @@ class cpu:
 	def _Adc(self, opCode):
 		"""
 		MOS6502 instruction ADC
+		=======================
+		Add the content of a memory address to the accumalator with the carry bit.
+		
+		TODO: Carry flag, Overflow flag.
 
 		Parameters
 		----------
@@ -248,6 +252,8 @@ class cpu:
 	def _And(self, opCode):
 		"""
 		MOS6502 instruction AND
+		=======================
+		Peform a logical AND on the accumulator using the contents of a byte of memory.
 
 		Parameters
 		----------
@@ -268,6 +274,8 @@ class cpu:
 	def _Asl(self, opCode):
 		"""
 		MOS6502 instruction ASL
+		=======================
+		Shift accumalator contents one bit left.
 
 		Parameters
 		----------
@@ -293,6 +301,8 @@ class cpu:
 	def _Bit(self, opCode):
 		"""
 		MOS6502 instruction BIT
+		=======================
+		Test if one or more bits are in the target memory location.
 
 		Parameters
 		----------
@@ -312,10 +322,12 @@ class cpu:
 	def _Clc(self, opCode=None):
 		"""
 		MOS6502 instruction CLC
+		=======================
+		Set the carry flag to 0.
 
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._PS_c = False
@@ -325,10 +337,12 @@ class cpu:
 	def _Cld(self, opCode=None):
 		"""
 		MOS6502 instruction CLD
+		=======================
+		Set decimal flag to 0.
 
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._PS_d = False
@@ -338,10 +352,12 @@ class cpu:
 	def _Cli(self, opCode=None):
 		"""
 		MOS6502 instruction CLI
+		=======================
+		Set interrupt disable flag to 0.
 
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._PS_i = False
@@ -351,10 +367,12 @@ class cpu:
 	def _Clv(self, opCode=None):
 		"""
 		MOS6502 instruction CLV
+		=======================
+		Set overflow flag to 0.
 
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._PS_v = False
@@ -364,6 +382,8 @@ class cpu:
 	def _Cmp(self, opCode):
 		"""
 		MOS6502 instruction CMP
+		=======================
+		Comapares the content of the accumulator with another value.
 		
 		Parameters
 		----------
@@ -385,6 +405,8 @@ class cpu:
 	def _Cpx(self, opCode):
 		"""
 		MOS6502 instruction CPX
+		=======================
+		Comparest the content of the X register with another value.
 		
 		Parameters
 		----------
@@ -406,6 +428,8 @@ class cpu:
 	def _Cpy(self, opCode):
 		"""
 		MOS6502 instruction CPY
+		=======================
+		Comparest the content of the Y register with another value.
 		
 		Parameters
 		----------
@@ -427,6 +451,8 @@ class cpu:
 	def _Dec(self, opCode):
 		"""
 		MOS6502 instruction Dec
+		=======================
+		Subtract 1 from a value.
 		
 		Parameters
 		----------
@@ -445,10 +471,12 @@ class cpu:
 	def _Dex(self, opCode):
 		"""
 		MOS6502 instruction DEX
+		=======================
+		Subtract 1 from the X register.
 		
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._pcIncrement()
@@ -461,10 +489,12 @@ class cpu:
 	def _Dey(self, opCode):
 		"""
 		MOS6502 instruction DEY
+		=======================
+		Subtract 1 from the zero Y register.
 		
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._pcIncrement()
@@ -477,6 +507,8 @@ class cpu:
 	def _Eor(self, opCode):
 		"""
 		MOS6502 instruction EOR
+		=======================
+		Perform XOR on the contents of the accumulator using the value on a byte of memory.
 		
 		Parameters
 		----------
@@ -497,6 +529,8 @@ class cpu:
 	def _Inc(self, opCode):
 		"""
 		MOS6502 instruction INC
+		=======================
+		Adds 1 to the content of a memory location.
 		
 		Parameters
 		----------
@@ -515,10 +549,12 @@ class cpu:
 	def _Inx(self, opCode):
 		"""
 		MOS6502 instruction INX
+		=======================
+		Adds 1 to X register.
 		
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._pcIncrement()
@@ -531,10 +567,12 @@ class cpu:
 	def _Iny(self, opCode):
 		"""
 		MOS6502 instruction INY
+		=======================
+		Adds 1 to Y register.
 		
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._pcIncrement()
@@ -547,6 +585,8 @@ class cpu:
 	def _Jmp(self, opCode):
 		"""
 		MOS6502 instruction JMP
+		=======================
+		Set the program counter (_PC) to specified address.
 		
 		Parameters
 		----------
@@ -566,6 +606,8 @@ class cpu:
 	def _Lda(self, opCode):
 		"""
 		MOS6502 instruction LDA
+		=======================
+		Loads a byte of memory to the accumulator.
 		
 		Parameters
 		----------
@@ -586,6 +628,8 @@ class cpu:
 	def _Ldx(self, opCode):
 		"""
 		MOS6502 instruction LDX
+		=======================
+		Loads a byte of memory to the X register.
 		
 		Parameters
 		----------
@@ -603,6 +647,8 @@ class cpu:
 	def _Ldy(self, opCode):
 		"""
 		MOS6502 instruction LDY
+		=======================
+		Loads a byte of memory to the Y register.
 		
 		Parameters
 		----------
@@ -620,6 +666,8 @@ class cpu:
 	def _Lsr(self, opCode):
 		"""
 		MOS6502 instruction LSR
+		=======================
+		Shift each bits one place to the right.
 		
 		Parameters
 		----------
@@ -646,10 +694,12 @@ class cpu:
 	def _Nop(self, opCode):
 		"""
 		MOS6502 instruction NOP
+		=======================
+		Do nothing.
 		
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._pcIncrement()
@@ -658,6 +708,8 @@ class cpu:
 	def _Ora(self, opCode):
 		"""
 		MOS6502 instruction ORA
+		=======================
+		Perform OR on the content of the accumulator with a value.
 		
 		Parameters
 		----------
@@ -678,6 +730,8 @@ class cpu:
 	def _Rol(self, opCode):
 		"""
 		MOS6502 instruction ROL
+		=======================
+		Move each of the bits one place to the left.
 		
 		Parameters
 		----------
@@ -706,6 +760,8 @@ class cpu:
 	def _Ror(self, opCode):
 		"""
 		MOS6502 instruction ROR
+		=======================
+		Move each of the bits onplace to the right.
 		
 		Parameters
 		----------
@@ -734,6 +790,8 @@ class cpu:
 	def _Sbc(self, opCode):
 		"""
 		MOS6502 instruction SBC
+		=======================
+		Subtracts the content of a memory to the accumulator with the not of the carry bit.
 		
 		Parameters
 		----------
@@ -758,10 +816,12 @@ class cpu:
 	def _Sec(self, opCode):
 		"""
 		MOS6502 instruction SEC
+		=======================
+		Set carry flag to 1.
 		
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._PS_c = True
@@ -771,10 +831,12 @@ class cpu:
 	def _Sed(self, opCode):
 		"""
 		MOS6502 instruction SED
+		=======================
+		Set decimal flag to 1.
 		
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._PS_d = True
@@ -784,10 +846,12 @@ class cpu:
 	def _Sei(self, opCode):
 		"""
 		MOS6502 instruction SEI
+		=======================
+		Set interrupt disable flag to one.
 		
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._PS_i = True
@@ -797,6 +861,8 @@ class cpu:
 	def _Sta(self, opCode):
 		"""
 		MOS6502 instruction STA
+		=======================
+		Stores the content of accumulator to memory.
 		
 		Parameters
 		----------
@@ -812,6 +878,8 @@ class cpu:
 	def _Stx(self, opCode):
 		"""
 		MOS6502 instruction STX
+		=======================
+		Stores the content of the X register to memory.
 		
 		Parameters
 		----------
@@ -827,6 +895,8 @@ class cpu:
 	def _Sty(self, opCode):
 		"""
 		MOS6502 instruction STY
+		=======================
+		Stores the content of the Y register to memory.
 		
 		Parameters
 		----------
@@ -841,11 +911,13 @@ class cpu:
 
 	def _Tax(self, opCode):
 		"""
-		MOS6502 instruction Tax
+		MOS6502 instruction TAX
+		=======================
+		Copies the content of the accumulator to the X register.
 		
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._Reg_X = self._Acc
@@ -854,11 +926,13 @@ class cpu:
 
 	def _Tay(self, opCode):
 		"""
-		MOS6502 instruction Tay
+		MOS6502 instruction TAY
+		=======================
+		Copies the content of the accumulator to the Y register.
 		
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._Reg_Y = self._Acc
@@ -867,11 +941,13 @@ class cpu:
 
 	def _Tsx(self, opCode):
 		"""
-		MOS6502 instruction Tsx
+		MOS6502 instruction TSX
+		=======================
+		Copies  the current contents of the stack pointer to the register.
 		
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._Reg_X = self._SP
@@ -880,11 +956,13 @@ class cpu:
 
 	def _Txa(self, opCode):
 		"""
-		MOS6502 instruction Txa
+		MOS6502 instruction TXA
+		=======================
+		Copies the content of the X register to the accumulator.
 		
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._Acc = self._Reg_X
@@ -893,11 +971,13 @@ class cpu:
 
 	def _Txs(self, opCode):
 		"""
-		MOS6502 instruction Txs
+		MOS6502 instruction TXS
+		=======================
+		Copies the content of the X register to the stack pointer.
 		
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._SP = self._Reg_X
@@ -907,10 +987,12 @@ class cpu:
 	def _Tya(self, opCode):
 		"""
 		MOS6502 instruction Tya
+		=======================
+		Copies the content of the Y register to the accumulator.
 		
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._Acc = self._Reg_Y
@@ -919,7 +1001,9 @@ class cpu:
 
 	def _readIndirectX(self):
 		"""
-		Indexed indirect addressing mode. It adds the X registor with the second byte of the instruction, returns it as an address.
+		Indexed indirect addressing mode
+		================================
+		It adds the X registor with the second byte of the instruction, returns it as an address.
 
 		Returns
 		-------
@@ -932,7 +1016,9 @@ class cpu:
 
 	def _readZeroPage(self):
 		"""
-		Zero page addressing mode. Returns the second byte in the instruction as an address in zero page.
+		Zero page addressing mode
+		=========================
+		Returns the second byte in the instruction as an address in zero page.
 		
 		Returns
 		-------
@@ -943,6 +1029,8 @@ class cpu:
 
 	def _readImmediate(self):
 		"""
+		Immediate addressing mode
+		=========================
 		Returns a two byte data.
 		
 		Returns
@@ -954,7 +1042,9 @@ class cpu:
 	
 	def _readAbsolute(self):
 		"""
-		Absolute addrssing mode. Returns the next two byte as an address.
+		Absolute addrssing mode
+		=======================
+		Returns the next two byte as an address.
 		
 		Returns
 		-------
@@ -967,7 +1057,9 @@ class cpu:
 
 	def _readIndirectY(self):
 		"""
-		Indirect indexed addressing mode. It read the second byte as an address to a word in zero page. Returns the word+Y registor as an address.
+		Indirect indexed addressing mode
+		================================
+		It read the second byte as an address to a word in zero page. Returns the word+Y registor as an address.
 		
 		Returns
 		-------
@@ -981,7 +1073,9 @@ class cpu:
 
 	def _readZeroPageX(self):
 		"""
-		Zero Page,X addressing mode. Read the second byte of the instruction, add to the X registor. Return the result as an address in zero page.
+		Zero Page,X addressing mode
+		===========================
+		Read the second byte of the instruction, add to the X registor. Return the result as an address in zero page.
 		
 		Returns
 		-------
@@ -992,7 +1086,9 @@ class cpu:
 
 	def _readZeroPageY(self):
 		"""
-		Zero Page,Y addressing mode. Read the second byte of the instruction, add to the Y registor. Return the result as an address in zero page.
+		Zero Page,Y addressing mode
+		===========================
+		Read the second byte of the instruction, add to the Y registor. Return the result as an address in zero page.
 		
 		Returns
 		-------
@@ -1003,7 +1099,9 @@ class cpu:
 
 	def _readAbsoluteY(self):
 		"""
-		Absolute,y addressing mode. Reads the next two bytes in the instruction as an address. Returns the address+Y registor as an address.
+		Absolute,y addressing mode
+		==========================
+		Reads the next two bytes in the instruction as an address. Returns the address+Y registor as an address.
 		
 		Returns
 		-------
@@ -1016,7 +1114,9 @@ class cpu:
 
 	def _readAbsoluteX(self):
 		"""
-		Absolute,x addressing mode. Reads the next two bytes in the instruction as an address. Returns the address+X registor as an address.
+		Absolute,x addressing mode
+		==========================
+		Reads the next two bytes in the instruction as an address. Returns the address+X registor as an address.
 		
 		Returns
 		-------

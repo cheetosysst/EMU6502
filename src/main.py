@@ -1,3 +1,7 @@
+"""
+This file is a temporary main.py to test and control the classes. It will be replaced by a seperate script in the future.
+"""
+
 from cpu import cpu
 from memory import memory
 
