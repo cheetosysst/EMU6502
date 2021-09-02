@@ -64,6 +64,9 @@ class cpu:
 	writeWord(address, value)
 		Write 2 bytes to memory. Only accept 16 bit value, higher bits will be ignored.
 
+	writeStatus(status)
+		Write processor status to each flags.
+
 	execute()
 		Start code execution. Execution stops when the current instruction is not implemented.
 
@@ -93,6 +96,9 @@ class cpu:
 
 	_readAbsoluteX()
 		"Absolute,x" addressing mode. Reads the next two bytes in the instruction as an address. Returns the address+X registor as an address.
+
+	_readRelative()
+		Relitive addressing mode. Returns the second byte in the instruction as an offset to the program counter.
 	"""
 
 	_memory = memory()
@@ -341,6 +347,23 @@ class cpu:
 			self.writeByte(dataAddress, data)
 			self._PS_n = bool((data & 0b10000000)>0)
 		self._PS_z = bool(self._Acc == 0)
+		self._pcIncrement()
+		pass
+
+	def _Bcc(self, opCode):
+		"""
+		MOS6502 instruction BCC
+		=======================
+		Shift accumalator contents one bit left.
+
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
+		self._pcIncrement()
+		offset = self._readRelative()
+		self._PC += offset
 		self._pcIncrement()
 		pass
 
@@ -1238,6 +1261,19 @@ class cpu:
 		self._pcIncrement()
 		return address
 
+	def _readRelative(self):
+		"""
+		Relitive addressing mode
+		=========================
+		Returns the second byte in the instruction as an offset to the program counter.
+		
+		Returns
+		-------
+		int
+			Address in the memory.
+		"""
+		return self.readByte(self._PC)
+
 	"""
 	Instruction Addressing Mode List
 	================================
@@ -1492,7 +1528,7 @@ class cpu:
 		[None, _Adc, None, None, None, _Adc, _Ror, None, _Pla, _Adc, _Ror, None, _Jmp, _Adc, _Ror, None], #6
 		[None, _Adc, None, None, None, _Adc, _Ror, None, _Sei, _Adc, None, None, None, _Adc, _Ror, None], #7
 		[None, _Sta, None, None, _Sty, _Sta, _Stx, None, _Dey, None, _Txa, None, _Sty, _Sta, _Stx, None], #8
-		[None, _Sta, None, None, _Sty, _Sta, _Stx, None, _Tya, _Sta, _Txs, None, None, _Sta, None, None], #9
+		[_Bcc, _Sta, None, None, _Sty, _Sta, _Stx, None, _Tya, _Sta, _Txs, None, None, _Sta, None, None], #9
 		[_Ldy, _Lda, _Ldx, None, _Ldy, _Lda, _Ldx, None, _Tay, _Lda, _Tax, None, _Ldy, _Lda, _Ldx, None], #A
 		[None, _Lda, None, None, _Ldy, _Lda, _Ldx, None, _Clv, _Lda, _Tsx, None, _Ldy, _Lda, _Ldx, None], #B
 		[_Cpy, _Cmp, None, None, _Cpy, _Cmp, _Dec, None, _Iny, _Cmp, _Dex, None, _Cpy, _Cmp, _Dec, None], #C
