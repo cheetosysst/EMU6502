@@ -362,8 +362,9 @@ class cpu:
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._pcIncrement()
-		offset = self._readRelative()
-		self._PC += offset
+		if self._PS_c:
+			offset = self._readRelative()
+			self._PC += offset
 		self._pcIncrement()
 		pass
 
