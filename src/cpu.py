@@ -1485,7 +1485,7 @@ class cpu:
 		#0,    1,    2,    3,    4,    5,    6,    7,    8,    9,    A,    B,    C,    D,    E,    F
 		[None, _Ora, None, None, None, _Ora, _Asl, None, _Php, _Ora, _Asl, None, None, _Ora, _Asl, None], #0
 		[None, _Ora, None, None, None, _Ora, _Asl, None, _Clc, _Ora, None, None, None, _Ora, _Asl, None], #1
-		[None, _And, None, None, _Bit, _And, _Rol, None, None, _And, _Rol, None, _Bit, _And, _Rol, None], #2
+		[None, _And, None, None, _Bit, _And, _Rol, None, _Plp, _And, _Rol, None, _Bit, _And, _Rol, None], #2
 		[None, _And, None, None, None, _And, _Rol, None, _Sec, _And, None, None, None, _And, _Rol, None], #3
 		[None, _Eor, None, None, None, _Eor, _Lsr, None, _Pha, _Eor, _Lsr, None, _Jmp, _Eor, _Lsr, None], #4
 		[None, _Eor, None, None, None, _Eor, _Lsr, None, _Cli, _Eor, None, None, None, _Eor, _Lsr, None], #5
