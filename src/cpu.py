@@ -425,6 +425,24 @@ class cpu:
 		self._pcIncrement()
 		pass
 
+	def _Bmi(self, opCode):
+		"""
+		MOS6502 instruction BMI
+		=======================
+		Branch if negative flag is set.
+
+		Parameters
+		----------
+		opCode : int, optional
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
+		self._pcIncrement()
+		if self._PS_n:
+			offset = self._readRelative()
+			self._PC += offset
+		self._pcIncrement()
+		pass
+
 	def _Clc(self, opCode=None):
 		"""
 		MOS6502 instruction CLC
@@ -1559,7 +1577,7 @@ class cpu:
 		[None, _Ora, None, None, None, _Ora, _Asl, None, _Php, _Ora, _Asl, None, None, _Ora, _Asl, None], #0
 		[None, _Ora, None, None, None, _Ora, _Asl, None, _Clc, _Ora, None, None, None, _Ora, _Asl, None], #1
 		[None, _And, None, None, _Bit, _And, _Rol, None, _Plp, _And, _Rol, None, _Bit, _And, _Rol, None], #2
-		[None, _And, None, None, None, _And, _Rol, None, _Sec, _And, None, None, None, _And, _Rol, None], #3
+		[_Bmi, _And, None, None, None, _And, _Rol, None, _Sec, _And, None, None, None, _And, _Rol, None], #3
 		[None, _Eor, None, None, None, _Eor, _Lsr, None, _Pha, _Eor, _Lsr, None, _Jmp, _Eor, _Lsr, None], #4
 		[None, _Eor, None, None, None, _Eor, _Lsr, None, _Cli, _Eor, None, None, None, _Eor, _Lsr, None], #5
 		[None, _Adc, None, None, None, _Adc, _Ror, None, _Pla, _Adc, _Ror, None, _Jmp, _Adc, _Ror, None], #6
