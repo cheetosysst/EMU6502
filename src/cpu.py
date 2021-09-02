@@ -354,7 +354,25 @@ class cpu:
 		"""
 		MOS6502 instruction BCC
 		=======================
-		Shift accumalator contents one bit left.
+		Branch if carry flag is cleared.
+
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
+		self._pcIncrement()
+		if not self._PS_c:
+			offset = self._readRelative()
+			self._PC += offset
+		self._pcIncrement()
+		pass
+
+	def _Bcs(self, opCode):
+		"""
+		MOS6502 instruction BCS
+		=======================
+		Branch if carry flag is set.
 
 		Parameters
 		----------
