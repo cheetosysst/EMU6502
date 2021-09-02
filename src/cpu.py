@@ -479,6 +479,42 @@ class cpu:
 		self._pcIncrement()
 		pass
 
+	def _Bvc(self, opCode):
+		"""
+		MOS6502 instruction BVC
+		=======================
+		Branch if overflow flag is clear.
+
+		Parameters
+		----------
+		opCode : int, optional
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
+		self._pcIncrement()
+		if not self._PS_v:
+			offset = self._readRelative()
+			self._PC += offset
+		self._pcIncrement()
+		pass
+
+	def _Bvs(self, opCode):
+		"""
+		MOS6502 instruction BVS
+		=======================
+		Branch if overflow flag is set.
+
+		Parameters
+		----------
+		opCode : int, optional
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
+		self._pcIncrement()
+		if self._PS_v:
+			offset = self._readRelative()
+			self._PC += offset
+		self._pcIncrement()
+		pass
+
 	def _Clc(self, opCode=None):
 		"""
 		MOS6502 instruction CLC
@@ -1615,9 +1651,9 @@ class cpu:
 		[None, _And, None, None, _Bit, _And, _Rol, None, _Plp, _And, _Rol, None, _Bit, _And, _Rol, None], #2
 		[_Bmi, _And, None, None, None, _And, _Rol, None, _Sec, _And, None, None, None, _And, _Rol, None], #3
 		[None, _Eor, None, None, None, _Eor, _Lsr, None, _Pha, _Eor, _Lsr, None, _Jmp, _Eor, _Lsr, None], #4
-		[None, _Eor, None, None, None, _Eor, _Lsr, None, _Cli, _Eor, None, None, None, _Eor, _Lsr, None], #5
+		[_Bvc, _Eor, None, None, None, _Eor, _Lsr, None, _Cli, _Eor, None, None, None, _Eor, _Lsr, None], #5
 		[None, _Adc, None, None, None, _Adc, _Ror, None, _Pla, _Adc, _Ror, None, _Jmp, _Adc, _Ror, None], #6
-		[None, _Adc, None, None, None, _Adc, _Ror, None, _Sei, _Adc, None, None, None, _Adc, _Ror, None], #7
+		[_Bvs, _Adc, None, None, None, _Adc, _Ror, None, _Sei, _Adc, None, None, None, _Adc, _Ror, None], #7
 		[None, _Sta, None, None, _Sty, _Sta, _Stx, None, _Dey, None, _Txa, None, _Sty, _Sta, _Stx, None], #8
 		[_Bcc, _Sta, None, None, _Sty, _Sta, _Stx, None, _Tya, _Sta, _Txs, None, None, _Sta, None, None], #9
 		[_Ldy, _Lda, _Ldx, None, _Ldy, _Lda, _Ldx, None, _Tay, _Lda, _Tax, None, _Ldy, _Lda, _Ldx, None], #A
