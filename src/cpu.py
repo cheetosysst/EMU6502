@@ -447,7 +447,7 @@ class cpu:
 		"""
 		MOS6502 instruction BNE
 		=======================
-		Branch if negative flag is set.
+		Branch if zero flag is set.
 
 		Parameters
 		----------
@@ -456,6 +456,24 @@ class cpu:
 		"""
 		self._pcIncrement()
 		if not self._PS_z:
+			offset = self._readRelative()
+			self._PC += offset
+		self._pcIncrement()
+		pass
+
+	def _Bpl(self, opCode):
+		"""
+		MOS6502 instruction BPL
+		=======================
+		Branch if negative flag is clear.
+
+		Parameters
+		----------
+		opCode : int, optional
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
+		self._pcIncrement()
+		if not self._PS_n:
 			offset = self._readRelative()
 			self._PC += offset
 		self._pcIncrement()
@@ -1593,7 +1611,7 @@ class cpu:
 	_instructions = [
 		#0,    1,    2,    3,    4,    5,    6,    7,    8,    9,    A,    B,    C,    D,    E,    F
 		[None, _Ora, None, None, None, _Ora, _Asl, None, _Php, _Ora, _Asl, None, None, _Ora, _Asl, None], #0
-		[None, _Ora, None, None, None, _Ora, _Asl, None, _Clc, _Ora, None, None, None, _Ora, _Asl, None], #1
+		[_Bpl, _Ora, None, None, None, _Ora, _Asl, None, _Clc, _Ora, None, None, None, _Ora, _Asl, None], #1
 		[None, _And, None, None, _Bit, _And, _Rol, None, _Plp, _And, _Rol, None, _Bit, _And, _Rol, None], #2
 		[_Bmi, _And, None, None, None, _And, _Rol, None, _Sec, _And, None, None, None, _And, _Rol, None], #3
 		[None, _Eor, None, None, None, _Eor, _Lsr, None, _Pha, _Eor, _Lsr, None, _Jmp, _Eor, _Lsr, None], #4
