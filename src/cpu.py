@@ -223,6 +223,27 @@ class cpu:
 		self._memory.Data[address+1] = (value >> 8) & 0b11111111
 		pass
 
+	def writeStatus(self, status: int):
+		"""
+		Write processor status.
+		
+		Reference: https://wiki.nesdev.com/w/index.php/Status_flags
+
+		Parameters
+		-------
+		status: int
+			processor status.
+		"""
+		if status == None:
+			pass
+
+		self._PS_n = (status & 0b10000000) >> 7 # Negative
+		self._PS_v = (status & 0b01000000) >> 6 # Overflow
+		self._PS_d = (status & 0b00001000) >> 3 # Decimal
+		self._PS_i = (status & 0b00000100) >> 2 # Interrupt
+		self._PS_z = (status & 0b00000010) >> 1 # Zero
+		self._PS_c = (status & 0b00000001)      # Carry	
+
 	def _pcIncrement(self, clock=1):
 		"""
 		Increment program clock.
@@ -797,6 +818,23 @@ class cpu:
 		"""
 		self._pcIncrement()
 		self._Acc = self.readByte(self._SP)
+		self._SP += 1
+		pass
+
+	def _Plp(self, opCode):
+		"""
+		MOS6502 instruction PLP
+		=======================
+		Pulls status flags from the stack.
+		
+		Parameters
+		----------
+		opCode : int, optional
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
+		self._pcIncrement()
+		flags = self.readByte(self._SP)
+		self.writeStatus(flags)
 		self._SP += 1
 		pass
 
