@@ -138,7 +138,7 @@ class cpu:
 		self._PS_n = 0
 		pass
 
-	def readByte(self, address):
+	def readByte(self, address: int):
 		"""
 		Read 1 byte from memory.
 
@@ -154,7 +154,7 @@ class cpu:
 		"""
 		return self._memory.Data[address]
 
-	def readWord(self, address):
+	def readWord(self, address: int):
 		"""
 		Read 2 Bytes from memory.
 
@@ -192,7 +192,7 @@ class cpu:
 			self._PS_c       # Carry
 		)	
 
-	def writeByte(self, address, value):
+	def writeByte(self, address: int, value: int):
 		"""
 		Write 1 byte to memory. Only accept 8 bit value, higher bits will be ignored.
 
@@ -207,7 +207,7 @@ class cpu:
 		self._memory.Data[address] = value & 0b11111111
 		pass
 
-	def writeWord(self, address, value):
+	def writeWord(self, address: int, value: int):
 		"""
 		Write 2 bytes to memory. Only accept 16 bit value, higher bits will be ignored.
 
