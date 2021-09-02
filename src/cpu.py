@@ -358,7 +358,7 @@ class cpu:
 
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._pcIncrement()
@@ -376,11 +376,29 @@ class cpu:
 
 		Parameters
 		----------
-		opCode : int
+		opCode : int, optional
 			Opcode that is currently executing. Used for determine addressing mode.
 		"""
 		self._pcIncrement()
 		if self._PS_c:
+			offset = self._readRelative()
+			self._PC += offset
+		self._pcIncrement()
+		pass
+
+	def _Beq(self, opCode):
+		"""
+		MOS6502 instruction BEQ
+		=======================
+		Branch if zero flag is set.
+
+		Parameters
+		----------
+		opCode : int, optional
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
+		self._pcIncrement()
+		if self._PS_z:
 			offset = self._readRelative()
 			self._PC += offset
 		self._pcIncrement()
@@ -1549,9 +1567,9 @@ class cpu:
 		[None, _Sta, None, None, _Sty, _Sta, _Stx, None, _Dey, None, _Txa, None, _Sty, _Sta, _Stx, None], #8
 		[_Bcc, _Sta, None, None, _Sty, _Sta, _Stx, None, _Tya, _Sta, _Txs, None, None, _Sta, None, None], #9
 		[_Ldy, _Lda, _Ldx, None, _Ldy, _Lda, _Ldx, None, _Tay, _Lda, _Tax, None, _Ldy, _Lda, _Ldx, None], #A
-		[None, _Lda, None, None, _Ldy, _Lda, _Ldx, None, _Clv, _Lda, _Tsx, None, _Ldy, _Lda, _Ldx, None], #B
+		[_Bcs, _Lda, None, None, _Ldy, _Lda, _Ldx, None, _Clv, _Lda, _Tsx, None, _Ldy, _Lda, _Ldx, None], #B
 		[_Cpy, _Cmp, None, None, _Cpy, _Cmp, _Dec, None, _Iny, _Cmp, _Dex, None, _Cpy, _Cmp, _Dec, None], #C
 		[None, _Cmp, None, None, None, _Cmp, _Dec, None, _Cld, _Cmp, None, None, None, _Cmp, _Dec, None], #D
 		[_Cpx, _Sbc, None, None, _Cpx, _Sbc, _Inc, None, _Inx, _Sbc, _Nop, None, _Cpx, _Sbc, _Inc, None], #E
-		[None, _Sbc, None, None, None, _Sbc, _Inc, None, _Sed, _Sbc, None, None, None, _Sbc, _Inc, None]  #F
+		[_Beq, _Sbc, None, None, None, _Sbc, _Inc, None, _Sed, _Sbc, None, None, None, _Sbc, _Inc, None]  #F
 	]
