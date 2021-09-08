@@ -479,6 +479,26 @@ class cpu:
 		self._pcIncrement()
 		pass
 
+	def _Brk(self, opCode):
+		"""
+		MOS6502 instruction BRK
+		=======================
+		Branch if negative flag is clear.
+
+		Parameters
+		----------
+		opCode : int, optional
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
+		self.writeWord(self._SP, self._PC-1)
+		self._PC += 2
+		flags = self.readStatus()
+		self.writeByte(self._SP, flags)
+		self._PC = self.readWord(0xFFFE)
+		self._PS_b = True
+		self._PS_i = True
+		pass
+
 	def _Bvc(self, opCode):
 		"""
 		MOS6502 instruction BVC
@@ -799,6 +819,24 @@ class cpu:
 		self._pcIncrement()
 		pass
 
+	def _Jsr(self, opCode):
+		"""
+		MOS6502 instruction JSR
+		=======================
+		Push return point to stack and set program counter to the target memory address.
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
+		self._pcIncrement()
+		address = self._readAbsolute()
+		self._pcIncrement()
+		self.writeWord(self._SP, self._PC-1)
+		self._PC = address
+		pass
+
 	def _Lda(self, opCode):
 		"""
 		MOS6502 instruction LDA
@@ -1046,6 +1084,41 @@ class cpu:
 			self._pcIncrement()
 		self._PS_z = bool(data == 0)
 		self._PS_n = bool((data & 0b10000000)>0)
+		pass
+
+	def _Rti(self, opCode):
+		"""
+		MOS6502 instruction RTI
+		=======================
+		Pulls processor flag and program counter from the stack.
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
+		flags = self.readByte()
+		self.writeStatus(flags)
+		self._SP += 1
+		address = self.readWord(self._SP)
+		self._PC = address
+		self._SP += 2
+		pass
+
+	def _Rts(self, opCode):
+		"""
+		MOS6502 instruction RTS
+		=======================
+		Pulls program counter from the stack.
+		
+		Parameters
+		----------
+		opCode : int
+			Opcode that is currently executing. Used for determine addressing mode.
+		"""
+		address = self.readWord(self._SP)
+		self._PC = address
+		self._SP += 2
 		pass
 
 	def _Sbc(self, opCode):
@@ -1646,13 +1719,13 @@ class cpu:
 	"""
 	_instructions = [
 		#0,    1,    2,    3,    4,    5,    6,    7,    8,    9,    A,    B,    C,    D,    E,    F
-		[None, _Ora, None, None, None, _Ora, _Asl, None, _Php, _Ora, _Asl, None, None, _Ora, _Asl, None], #0
+		[_Brk, _Ora, None, None, None, _Ora, _Asl, None, _Php, _Ora, _Asl, None, None, _Ora, _Asl, None], #0
 		[_Bpl, _Ora, None, None, None, _Ora, _Asl, None, _Clc, _Ora, None, None, None, _Ora, _Asl, None], #1
-		[None, _And, None, None, _Bit, _And, _Rol, None, _Plp, _And, _Rol, None, _Bit, _And, _Rol, None], #2
+		[_Jsr, _And, None, None, _Bit, _And, _Rol, None, _Plp, _And, _Rol, None, _Bit, _And, _Rol, None], #2
 		[_Bmi, _And, None, None, None, _And, _Rol, None, _Sec, _And, None, None, None, _And, _Rol, None], #3
-		[None, _Eor, None, None, None, _Eor, _Lsr, None, _Pha, _Eor, _Lsr, None, _Jmp, _Eor, _Lsr, None], #4
+		[_Rti, _Eor, None, None, None, _Eor, _Lsr, None, _Pha, _Eor, _Lsr, None, _Jmp, _Eor, _Lsr, None], #4
 		[_Bvc, _Eor, None, None, None, _Eor, _Lsr, None, _Cli, _Eor, None, None, None, _Eor, _Lsr, None], #5
-		[None, _Adc, None, None, None, _Adc, _Ror, None, _Pla, _Adc, _Ror, None, _Jmp, _Adc, _Ror, None], #6
+		[_Rts, _Adc, None, None, None, _Adc, _Ror, None, _Pla, _Adc, _Ror, None, _Jmp, _Adc, _Ror, None], #6
 		[_Bvs, _Adc, None, None, None, _Adc, _Ror, None, _Sei, _Adc, None, None, None, _Adc, _Ror, None], #7
 		[None, _Sta, None, None, _Sty, _Sta, _Stx, None, _Dey, None, _Txa, None, _Sty, _Sta, _Stx, None], #8
 		[_Bcc, _Sta, None, None, _Sty, _Sta, _Stx, None, _Tya, _Sta, _Txs, None, None, _Sta, None, None], #9
