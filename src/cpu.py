@@ -1715,7 +1715,7 @@ class cpu:
 	=================
 	Table of instructions for cpu.execute() to access with different opcodes.
 
-	Reference: http://www.obelisk.me.uk/6502/reference.html
+	Reference: http://www.6502.org/tutorials/6502opcodes.html
 	"""
 	_instructions = [
 		#0,    1,    2,    3,    4,    5,    6,    7,    8,    9,    A,    B,    C,    D,    E,    F
